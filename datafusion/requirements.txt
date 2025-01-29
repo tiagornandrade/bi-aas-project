@@ -1,0 +1,4 @@
+pyarrow==12.0.1
+datafusion==35.0.0
+flask==2.2.5
+gunicorn==20.1.0
