@@ -1,0 +1,50 @@
+name: Terraform CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  terraform:
+    name: Terraform
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+
+      - name: Configure Google Cloud credentials
+        uses: google-github-actions/setup-gcloud@v0
+        with:
+          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Initialize Terraform
+        run: terraform init
+        working-directory: terraform
+
+      - name: Plan Terraform changes
+        run: terraform plan -out=tfplan
+        working-directory: terraform
+
+      - name: Apply Terraform changes
+        run: terraform apply -auto-approve tfplan
+        working-directory: terraform
+
+      - name: Clean up Terraform files
+        run: rm -rf .terraform tfplan
+        working-directory: terraform
+
+      - name: Store Terraform state
+        run: |
+            gsutil cp terraform.tfstate gs://${{ secrets.TERRAFORM_BUCKET }}/terraform/state/
+        working-directory: terraform
+        if: always()
