@@ -29,22 +29,22 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init
-        working-directory: iac/terraform
+        working-directory: terraform
 
       - name: Plan Terraform changes
         run: terraform plan -out=tfplan
-        working-directory: iac/terraform
+        working-directory: terraform
 
       - name: Apply Terraform changes
         run: terraform apply -auto-approve tfplan
-        working-directory: iac/terraform
+        working-directory: terraform
 
       - name: Clean up Terraform files
         run: rm -rf .terraform tfplan
-        working-directory: iac/terraform
+        working-directory: terraform
 
       - name: Store Terraform state
         run: |
             gsutil cp terraform.tfstate gs://${{ secrets.TERRAFORM_BUCKET }}/terraform/state/
-        working-directory: iac/terraform
+        working-directory: terraform
         if: always()
