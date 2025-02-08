@@ -3,7 +3,7 @@ provider "google" {
   region  = var.region
 }
 
-resource "google_compute_instance" "airbyte_vm" {
+resource "google_compute_instance" "airbyte_vm_1" {
   name         = "airbyte-vm"
   machine_type = var.machine_type
   zone         = var.zone
