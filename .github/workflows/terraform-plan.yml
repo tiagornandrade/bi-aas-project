@@ -38,12 +38,17 @@ jobs:
         run: terraform apply -auto-approve
         working-directory: terraform
 
-      - name: Clean up Terraform files
-        run: rm -rf .terraform tfplan
+      - name: Clean up Terraform temporary files
+        run: rm -f tfplan
         working-directory: terraform
+        if: always()
 
-      - name: Store Terraform state
+      - name: Store Terraform state (if needed)
         run: |
-            gsutil cp terraform.tfstate gs://${{ secrets.TERRAFORM_BUCKET }}/terraform/state/
+            if [ -f terraform.tfstate ]; then
+              gsutil cp terraform.tfstate gs://${{ secrets.TERRAFORM_BUCKET }}/terraform/state/
+            else
+              echo "No terraform.tfstate found, skipping upload."
+            fi
         working-directory: terraform
         if: always()
