@@ -18,14 +18,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
+      - name: Authenticate with Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
-
-      - name: Configure Google Cloud credentials
-        uses: google-github-actions/setup-gcloud@v0
-        with:
-          service_account_key: ${{ secrets.GOOGLE_CREDENTIALS }}
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Initialize Terraform
         run: terraform init
@@ -36,7 +35,7 @@ jobs:
         working-directory: terraform
 
       - name: Apply Terraform changes
-        run: terraform apply -auto-approve tfplan
+        run: terraform apply -auto-approve
         working-directory: terraform
 
       - name: Clean up Terraform files
