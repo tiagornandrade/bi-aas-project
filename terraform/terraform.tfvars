@@ -1,0 +1,5 @@
+project_id = "yams-lab-nonprod"
+region = "us-central1"
+zone = "us-central1-a"
+machine_type = "e2-medium"
+service_account_email = "dev-yams-lab@yams-lab-nonprod.iam.gserviceaccount.com"
