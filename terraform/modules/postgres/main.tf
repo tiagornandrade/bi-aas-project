@@ -6,7 +6,13 @@ resource "google_sql_database_instance" "main" {
 
   settings {
     tier = "db-f1-micro"
+
+    backup_configuration {
+      enabled = false
+    }
   }
+
+  deletion_protection = false
 }
 
 resource "google_service_account" "db_sa" {
