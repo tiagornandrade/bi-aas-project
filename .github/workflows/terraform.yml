@@ -28,15 +28,15 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init -backend-config="environments/dev/backend.tf"
-        working-directory: terraform/environments/dev
+        working-directory: terraform
 
       - name: Plan Terraform changes
-        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
-        working-directory: terraform/environments/dev
+        run: terraform plan -var-file="environments/dev/terraform.tfvars" -out=tfplan
+        working-directory: terraform
 
       - name: Apply Terraform changes
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform/environments/dev
+        working-directory: terraform
 
   terraform-prod:
     name: Terraform Prod
@@ -57,12 +57,12 @@ jobs:
 
       - name: Initialize Terraform
         run: terraform init -backend-config="environments/prod/backend.tf"
-        working-directory: terraform/environments/prod
+        working-directory: terraform
 
       - name: Plan Terraform changes
-        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
-        working-directory: terraform/environments/prod
+        run: terraform plan -var-file="environments/prod/terraform.tfvars" -out=tfplan
+        working-directory: terraform
 
       - name: Apply Terraform changes
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform/environments/prod
+        working-directory: terraform
