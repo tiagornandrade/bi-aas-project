@@ -8,7 +8,7 @@
 # }
 
 module "postgres" {
-  source                = "./modules/postgres"
+  source                = "../../modules/postgres"
   project_id            = var.project_id
   region                = var.region
   zone                  = var.zone

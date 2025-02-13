@@ -26,6 +26,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
 
+      - name: Ensure modules are downloaded
+        run: terraform get
+        working-directory: terraform/environments/dev
+
       - name: Initialize Terraform
         run: terraform init -backend-config="backend.tf"
         working-directory: terraform/environments/dev
@@ -54,6 +58,11 @@ jobs:
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v1
+
+      - name: Ensure modules are downloaded
+        run: terraform get
+        working-directory: terraform/environments/prod
+
 
       - name: Initialize Terraform
         run: terraform init -backend-config="backend.tf"
