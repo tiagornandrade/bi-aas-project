@@ -31,7 +31,7 @@ jobs:
         working-directory: terraform/environments/dev
 
       - name: Initialize Terraform
-        run: terraform init -backend-config="backend.tf"
+        run: terraform init
         working-directory: terraform/environments/dev
 
       - name: Plan Terraform changes
@@ -65,7 +65,7 @@ jobs:
 
 
       - name: Initialize Terraform
-        run: terraform init -backend-config="backend.tf"
+        run: terraform init
         working-directory: terraform/environments/prod
 
       - name: Plan Terraform changes
