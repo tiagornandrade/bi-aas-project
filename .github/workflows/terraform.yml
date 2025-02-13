@@ -27,16 +27,16 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: Initialize Terraform
-        run: terraform init -backend-config="environments/dev/backend.tf"
-        working-directory: terraform
+        run: terraform init -backend-config="backend.tf"
+        working-directory: terraform/environments/dev
 
       - name: Plan Terraform changes
-        run: terraform plan -var-file="environments/dev/terraform.tfvars" -out=tfplan
-        working-directory: terraform
+        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
+        working-directory: terraform/environments/dev
 
       - name: Apply Terraform changes
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform
+        working-directory: terraform/environments/dev
 
   terraform-prod:
     name: Terraform Prod
@@ -56,13 +56,13 @@ jobs:
         uses: hashicorp/setup-terraform@v1
 
       - name: Initialize Terraform
-        run: terraform init -backend-config="environments/prod/backend.tf"
-        working-directory: terraform
+        run: terraform init -backend-config="backend.tf"
+        working-directory: terraform/environments/prod
 
       - name: Plan Terraform changes
-        run: terraform plan -var-file="environments/prod/terraform.tfvars" -out=tfplan
-        working-directory: terraform
+        run: terraform plan -var-file="terraform.tfvars" -out=tfplan
+        working-directory: terraform/environments/prod
 
       - name: Apply Terraform changes
         run: terraform apply -auto-approve tfplan
-        working-directory: terraform
+        working-directory: terraform/environments/prod
