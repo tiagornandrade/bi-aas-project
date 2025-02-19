@@ -6,3 +6,4 @@ numpy
 sqlalchemy
 psycopg2
 pydantic
+pytest-mock

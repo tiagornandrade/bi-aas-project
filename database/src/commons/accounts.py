@@ -1,16 +1,19 @@
 import numpy as np
 from uuid import uuid4
 from faker import Faker
-from datetime import datetime
 from typing import List
 
 fake = Faker("pt_BR")
 
 
-class AccountEventsService:
+class AccountEvents:
     @staticmethod
     def generate_accounts(count: int) -> List[dict]:
-        """Gera contas como dicionários"""
+        """Gera contas como dicionários.
+
+        Cria uma lista de dicionários, onde cada dicionário representa
+        uma conta com detalhes como ID, tipo, saldo, moeda, status e ID do usuário.
+        """
         return [
             {
                 "account_id": str(uuid4()),
@@ -25,7 +28,11 @@ class AccountEventsService:
 
     @staticmethod
     def generate_subaccounts(count: int) -> List[dict]:
-        """Gera subcontas como dicionários"""
+        """Gera subcontas como dicionários.
+
+        Cria uma lista de dicionários, onde cada dicionário representa
+        uma subconta com detalhes como ID, ID da conta pai, propósito e saldo.
+        """
         return [
             {
                 "subaccount_id": str(uuid4()),
@@ -38,7 +45,11 @@ class AccountEventsService:
 
     @staticmethod
     def generate_users(count: int) -> List[dict]:
-        """Gera usuários como dicionários"""
+        """Gera usuários como dicionários.
+
+        Cria uma lista de dicionários, onde cada dicionário representa
+        um usuário com detalhes como ID, nome, e-mail, telefone e data de criação.
+        """
         return [
             {
                 "user_id": str(uuid4()),

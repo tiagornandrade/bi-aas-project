@@ -1,32 +1,40 @@
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
-from utils.db import Base
+from sqlalchemy import Column, String, Integer, DateTime
+from src.utils.db import Base
 from datetime import datetime
 
 
 class Account(Base):
     __tablename__ = "accounts"
+    __table_args__ = {"extend_existing": True}
 
-    account_id = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    account_id = Column(String)
     account_type = Column(String)
     balance = Column(Integer)
     currency = Column(String)
     status = Column(String)
-    user_id = Column(String, ForeignKey("users.user_id"))
+    user_id = Column(String)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class Subaccount(Base):
     __tablename__ = "subaccounts"
+    __table_args__ = {"extend_existing": True}
 
-    subaccount_id = Column(String, primary_key=True, index=True)
-    parent_account_id = Column(String, ForeignKey("accounts.account_id"))
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    subaccount_id = Column(String)
+    parent_account_id = Column(String)
     purpose = Column(String)
     balance = Column(Integer)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = {"extend_existing": True}
 
-    user_id = Column(String, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    user_id = Column(String)
     name = Column(String)
     email = Column(String, unique=True)
     phone = Column(String)
