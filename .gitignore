@@ -11,3 +11,4 @@ database/src/utils/__pycache__
 database/tests/__pycache__
 venv
 /venv
+database/.env

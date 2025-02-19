@@ -12,5 +12,6 @@ run-migrations:
 
 run-main:
 	export PYTHONPATH="${PYTHONPATH}:$(pwd)" && \
-	export $(xargs <.env) && \
 	python src/main.py
+
+# export $(xargs <.env)
