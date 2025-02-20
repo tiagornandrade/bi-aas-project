@@ -9,36 +9,29 @@ fake = Faker("pt_BR")
 
 class LendingEvents:
     @staticmethod
-    def generate_loan(count: object) -> List[dict]:
-        """Gera empréstimos como dicionários.
-
-        Cria um dicionário de empréstimos, com informações como ID, ID do usuário, valor, taxa de juros, prazo e data de criação.
-        """
+    def generate_loans(count: int) -> List[dict]:
+        """Gera empréstimos como dicionários."""
         return [
             {
                 "loan_id": str(uuid4()),
                 "user_id": str(uuid4()),
-                "amount": np.random.randint(1, 1000),
-                "interest_rate": np.random.uniform(0, 0.5),
-                "term": np.random.randint(1, 36),
-                "created_at": fake.date_time_this_year(),
+                "amount": np.random.randint(1000, 50000),
+                "interest_rate": np.random.uniform(2.5, 15.0),
+                "term": np.random.randint(12, 60),
             }
             for _ in range(count)
         ]
 
     @staticmethod
-    def generate_payment(count: object) -> List[dict]:
-        """Gera pagamentos como dicionários.
-
-        Cria um dicionário de pagamentos, com informações como ID, ID do empréstimo, valor, data e status.
-        """
+    def generate_payments(count: int) -> List[dict]:
+        """Gera pagamentos de empréstimos como dicionários."""
         return [
             {
                 "payment_id": str(uuid4()),
                 "loan_id": str(uuid4()),
-                "amount": np.random.randint(1, 1000),
-                "date": fake.date_this_year(),
-                "status": np.random.choice(["pending", "completed"]),
+                "amount": np.random.randint(100, 2000),
+                "date": fake.date_time_this_year(),
+                "status": np.random.choice(["completed", "pending", "failed"]),
             }
             for _ in range(count)
         ]

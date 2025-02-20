@@ -2,6 +2,13 @@ import logging
 from services.account import AccountService
 from services.audit import AuditService
 from services.compliance import ComplianceService
+from services.credit import CreditService
+from services.entities import EntityService
+from services.insurance import InsuranceService
+from services.investments import PortfolioService
+from services.lending import LoanService
+from services.payment import TransactionService
+
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -69,12 +76,24 @@ def _extracted_from_safe_insert_4(service, function_name, count):
 
 def main():
     operations = [
-        (AccountService, "insert_users", 5),
-        (AccountService, "insert_accounts", 5),
-        (AccountService, "insert_subaccounts", 5),
-        (AuditService, "insert_audits", 5),
-        (ComplianceService, "insert_regulations", 5),
-        (ComplianceService, "insert_user_verification", 5),
+        (AccountService, "insert_users", 10000),
+        (AccountService, "insert_accounts", 10000),
+        (AccountService, "insert_subaccounts", 10000),
+        (AuditService, "insert_audits", 10000),
+        (ComplianceService, "insert_regulations", 10000),
+        (ComplianceService, "insert_user_verification", 10000),
+        (CreditService, "insert_credit_scores", 10000),
+        (CreditService, "insert_risk_assessments", 10000),
+        (EntityService, "insert_entities", 10000),
+        (InsuranceService, "insert_policies", 10000),
+        (InsuranceService, "insert_claims", 10000),
+        (InsuranceService, "insert_insured_entities", 10000),
+        (PortfolioService, "insert_portfolios", 10000),
+        (LoanService, "insert_loans", 10000),
+        (LoanService, "insert_payments", 10000),
+        (TransactionService, "insert_transactions", 10000),
+        (TransactionService, "insert_payment_methods", 10000),
+        (TransactionService, "insert_merchants", 10000),
     ]
 
     for service, function_name, count in operations:

@@ -7,19 +7,20 @@ from typing import List
 fake = Faker("pt_BR")
 
 
-class InvestimentsEvents:
-    @staticmethod
-    def generate_portfolio(count: object) -> List[dict]:
-        """Gera carteiras como dicionários.
+class InvestmentsEvents:
+    """Gera dados sintéticos para portfólios de investimento."""
 
-        Cria um dicionário de carteiras, com informações como ID, ID do usuário, valor total e perfil de risco.
-        """
+    @staticmethod
+    def generate_portfolios(count: int) -> List[dict]:
+        """Gera portfólios como dicionários."""
         return [
             {
                 "portfolio_id": str(uuid4()),
                 "user_id": str(uuid4()),
-                "total_value": np.random.randint(1, 1000),
-                "risk_profile": np.random.choice(["low", "medium", "high"]),
+                "total_value": np.random.randint(1000, 100000),
+                "risk_profile": np.random.choice(
+                    ["conservative", "moderate", "aggressive"]
+                ),
             }
             for _ in range(count)
         ]
