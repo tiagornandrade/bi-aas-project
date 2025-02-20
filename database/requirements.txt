@@ -1,0 +1,9 @@
+mkdocs
+pre-commit
+pytest
+faker
+numpy
+sqlalchemy
+psycopg2
+pydantic
+pytest-mock
