@@ -15,3 +15,7 @@ run-main:
 	python src/main.py
 
 # export $(xargs <.env)
+
+test:
+	export PYTHONPATH="${PYTHONPATH}:$(pwd)" && \
+	pytest -vv

@@ -7,6 +7,31 @@ from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
 
+@pytest.fixture
+def table_name():
+    return "test_table"
+
+
+@pytest.fixture
+def model_columns():
+    return lambda: [Column("id", Integer, primary_key=True), Column("name", String)]
+
+
+def test_sync_models_with_db_error_handling(mocker: MockerFixture, test_engine):
+    """
+    Testa se erros durante a sincronização dos modelos com o banco de dados são manipulados corretamente.
+    """
+    error_message = "Erro simulada na criação de tabelas"
+
+    mocker.patch(
+        "src.utils.migrations.Base.metadata.create_all",
+        side_effect=Exception(error_message),
+    )
+
+    with pytest.raises(Exception, match=error_message):
+        sync_models_with_db()
+
+
 def drop_existing_indexes(engine):
     """
     Remove todos os índices existentes no banco SQLite.

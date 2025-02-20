@@ -18,17 +18,30 @@ def clean_sqlalchemy_obj(obj):
 
 
 def safe_insert(service, function_name, count):
-    """Executa operações de inserção de forma segura, capturando e logando erros."""
-    try:
-        return _extracted_from_safe_insert_4(service, function_name, count)
-    except TypeError as e:
+    """Executa a inserção segura em um serviço, capturando e registrando erros."""
+    function = getattr(service, function_name, None)
+    if function is None or not callable(function):
         logging.error(
-            f"Erro de tipo ao executar {function_name}: {e}. Verifique se os argumentos são válidos."
+            f"Error: {function_name} not found or not callable in {service.__name__}"
         )
         return []
-    except Exception as e:
-        logging.error(f"Erro ao executar {function_name}: {str(e)}")
+
+    try:
+        result = function(count)
+    except TypeError as e:
+        logging.error(f"Type error executing {function_name}: {e}. Check arguments.")
         return []
+    except Exception as e:
+        logging.error(f"Error executing {function_name}: {e}")
+        return []
+
+    if isinstance(result, list) and not result:
+        logging.warning(f"{function_name} did not insert any data.")
+    elif result is None:
+        logging.warning(f"{function_name} returned None. Verify insertion logic.")
+
+    logging.info(f"{function_name} completed with result: {result}")
+    return result or []
 
 
 # TODO Rename this here and in `safe_insert`

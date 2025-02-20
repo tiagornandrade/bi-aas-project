@@ -12,3 +12,5 @@ database/tests/__pycache__
 venv
 /venv
 database/.env
+.idea
+.vscode

@@ -9,7 +9,7 @@ fake = Faker("pt_BR")
 
 class PaymentsEvents:
     @staticmethod
-    def generate_transactions(count: int) -> List[Transaction]:
+    def generate_transactions(count: int) -> List[dict]:
         """Gera transações.
 
         Cria uma lista de transações, com informações como ID, valor, moeda, status, timestamp, ID do remetente e ID do destinatário.
@@ -28,7 +28,7 @@ class PaymentsEvents:
         ]
 
     @staticmethod
-    def generate_payment_methods(count: int) -> List[PaymentMethod]:
+    def generate_payment_methods(count: int) -> List[dict]:
         """Gera métodos de pagamento.
 
         Cria uma lista de métodos de pagamento, com informações como ID, tipo, detalhes e ID do usuário.
@@ -44,7 +44,7 @@ class PaymentsEvents:
         ]
 
     @staticmethod
-    def generate_merchants(count: int) -> List[Merchant]:
+    def generate_merchants(count: int) -> List[dict]:
         """Gera comerciantes.
 
         Cria uma lista de comerciantes, com informações como ID, nome, categoria e informações de contato.
