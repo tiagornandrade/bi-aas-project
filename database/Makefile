@@ -16,6 +16,11 @@ run-main:
 
 # export $(xargs <.env)
 
+install:
+	pip install -r requirements.txt
+
 test:
 	export PYTHONPATH="${PYTHONPATH}:$(pwd)" && \
 	pytest -vv
+
+ci: install test
