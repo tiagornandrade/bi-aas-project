@@ -23,8 +23,8 @@ jobs:
     - name: Install dependencies
       run: pip install -r requirements.txt
 
-    - name: Set environment variables
-      run: echo "DATABASE_URL=sqlite:///./test.db" >> $GITHUB_ENV
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)/database/src" >> $GITHUB_ENV
 
-    - name: Run tests
-      run: pytest
+    - name: Run tests with Makefile
+      run: make test
