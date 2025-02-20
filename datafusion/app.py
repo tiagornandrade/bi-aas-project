@@ -10,13 +10,14 @@ GCS_GOLD_LAYER = "gs://bi-aas-project-gold/"
 
 ctx.register_parquet("gold_data", GCS_GOLD_LAYER)
 
+
 @app.route("/query", methods=["POST"])
 def run_query():
     """
     Endpoint para executar queries SQL sobre os dados da camada Gold.
     """
     query = request.json.get("query")
-    
+
     if not query:
         return jsonify({"error": "Query não fornecida"}), 400
 

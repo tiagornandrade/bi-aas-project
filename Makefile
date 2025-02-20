@@ -1,8 +1,9 @@
-up:
-	docker-compose up -d
+install-precommit:
+	pre-commit install
 
-down:
-	docker-compose down
+run-precommit:
+	pre-commit run --all-files
 
-restart:
-	docker-compose restart
+test:
+	export PYTHONPATH="${PYTHONPATH}:$(pwd)" && \
+	pytest -vv

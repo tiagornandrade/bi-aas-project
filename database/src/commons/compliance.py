@@ -1,48 +1,39 @@
-
-import os
-import numpy as np
+import random
 from uuid import uuid4
 from faker import Faker
-
+from typing import List
 
 fake = Faker("pt_BR")
 
 
 class CompliancesEvents:
+    """Gera dados sintéticos para regulamentações, auditorias e verificações de usuários."""
+
     @staticmethod
-    def generate_regulation(x: object) -> object:
-        return {
-            data: {
+    def generate_regulations(count: int) -> List[dict]:
+        """Gera regulamentações como dicionários."""
+        return [
+            {
                 "regulation_id": str(uuid4()),
-                "name": fake.word(),
-                "description": fake.sentence(),
-                "jurisdiction": fake.word(),
+                "name": fake.sentence(),
+                "description": fake.paragraph(),
+                "jurisdiction": fake.country(),
+                "created_at": fake.date_time_this_year(),
             }
-            for data in range(x)
-        }
+            for _ in range(count)
+        ]
 
     @staticmethod
-    def generate_audit(x: object) -> object:
-        return {
-            data: {
-                "audit_id": str(uuid4()),
-                "entity_id": str(uuid4()),
-                "status": np.random.choice(["pending", "completed"]),
-                "findings": fake.sentence(),
-                "date": fake.date_this_year(),
-            }
-            for data in range(x)
-        }
-
-    @staticmethod
-    def generate_user_verification(x: object) -> object:
-        return {
-            data: {
+    def generate_user_verifications(count: int) -> List[dict]:
+        """Gera verificações de usuários como dicionários."""
+        return [
+            {
                 "verification_id": str(uuid4()),
                 "user_id": str(uuid4()),
-                "type": np.random.choice(["KYC", "AML"]),
-                "status": np.random.choice(["pending", "approved", "rejected"]),
-                "date": fake.date_this_year(),
+                "type": random.choice(["email", "phone", "identity"]),
+                "status": random.choice(["approved", "pending", "rejected"]),
+                "date": fake.date_time_this_year(),
+                "created_at": fake.date_time_this_year(),
             }
-            for data in range(x)
-        }
+            for _ in range(count)
+        ]

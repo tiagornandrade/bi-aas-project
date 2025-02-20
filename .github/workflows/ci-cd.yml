@@ -1,27 +1,77 @@
-name: Python Only CI  
+name: CI Pipeline
 
-on: 
+on:
   push:
     branches:
       - main
   pull_request:
     branches:
-      - main  
+      - main
 
-jobs:  
-  build:  
-    runs-on: ubuntu-latest  
+jobs:
+  test-root:
+    name: Run tests in root directory
+    runs-on: ubuntu-latest
 
-    steps:  
-    - uses: actions/checkout@v3  
+    steps:
+    - uses: actions/checkout@v3
 
-    - name: Set up Python  
-      uses: actions/setup-python@v4  
-      with:  
-        python-version: '3.12'  
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
 
-    - name: Install dependencies  
-      run: pip install -r requirements.txt  
+    - name: Install dependencies
+      run: pip install -r requirements.txt
 
-    - name: Run tests  
-      run: pytest   
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+    - name: Run tests in root with report
+      run: pytest tests/ --junitxml=test-results-root.xml  # Gera relatório em XML
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-root
+        path: test-results-root.xml
+
+    - name: Display test results summary
+      if: always()
+      run: |
+        echo "### Test Results for Root" >> $GITHUB_STEP_SUMMARY
+        echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY
+
+
+  test-database:
+    name: Run tests in database directory
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)/database/src" >> $GITHUB_ENV
+
+    - name: Run tests in database/
+      run: cd database && make test
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results-database
+        path: database/test-results-database.xml
+
+    - name: Display test results summary
+      if: always()
+      run: |
+        echo "### Test Results for Database" >> $GITHUB_STEP_SUMMARY
+        echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY
