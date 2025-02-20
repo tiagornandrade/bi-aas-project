@@ -31,7 +31,7 @@ jobs:
       run: pytest tests/ --junitxml=test-results-root.xml  # Gera relatório em XML
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-root
         path: test-results-root.xml
@@ -65,7 +65,7 @@ jobs:
       run: cd database && make test
 
     - name: Upload test results
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: test-results-database
         path: database/test-results-database.xml
