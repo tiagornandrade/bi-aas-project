@@ -21,6 +21,6 @@ install:
 
 test:
 	export PYTHONPATH="${PYTHONPATH}:$(pwd)" && \
-	pytest -vv
+	pytest -vv  --junitxml=test-results-database.xml
 
 ci: install test
