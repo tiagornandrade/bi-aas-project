@@ -1,4 +1,4 @@
-name: Python Only CI
+name: CI Pipeline
 
 on:
   push:
@@ -9,7 +9,8 @@ on:
       - main
 
 jobs:
-  build:
+  test-root:
+    name: Run tests in root directory
     runs-on: ubuntu-latest
 
     steps:
@@ -21,10 +22,32 @@ jobs:
         python-version: '3.12'
 
     - name: Install dependencies
-      run: cd database && pip install -r requirements.txt
+      run: pip install -r requirements.txt
+
+    - name: Set PYTHONPATH
+      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
+
+    - name: Run tests in root
+      run: pytest tests/
+
+
+  test-database:
+    name: Run tests in database directory
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$(pwd)/database/src" >> $GITHUB_ENV
 
-    - name: Run tests with Makefile
-      run: cd database && make test
+    - name: Run tests in database/
+      run: cd database && pytest tests/
