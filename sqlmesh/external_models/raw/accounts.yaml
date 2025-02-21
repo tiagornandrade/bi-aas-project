@@ -1,0 +1,9 @@
+- name: raw.accounts
+  description: "Tabela externa contendo contas carregadas no PostgreSQL"
+  columns:
+    event_uuid: text
+    event_type: text
+    event_timestamp: timestamp
+    ingested_at: timestamp
+    table_name: text
+    payload: jsonb
