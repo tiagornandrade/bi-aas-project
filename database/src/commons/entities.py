@@ -1,9 +1,12 @@
+import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
 from typing import List
 
 fake = Faker("pt_BR")
+
+counter = itertools.count(start=1)
 
 
 class EntityEvents:
@@ -18,6 +21,7 @@ class EntityEvents:
         """
         return [
             {
+                "id": next(counter),
                 "entity_id": str(uuid4()),
                 "name": fake.company(),
             }

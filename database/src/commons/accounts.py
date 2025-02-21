@@ -1,9 +1,12 @@
+import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
 from typing import List
 
 fake = Faker("pt_BR")
+
+counter = itertools.count(start=1)
 
 
 class AccountEvents:
@@ -16,6 +19,7 @@ class AccountEvents:
         """
         return [
             {
+                "id": next(counter),
                 "account_id": str(uuid4()),
                 "account_type": np.random.choice(["personal", "business"]),
                 "balance": np.random.randint(1, 1000),
@@ -35,6 +39,7 @@ class AccountEvents:
         """
         return [
             {
+                "id": next(counter),
                 "subaccount_id": str(uuid4()),
                 "parent_account_id": str(uuid4()),
                 "purpose": np.random.choice(["savings", "investment"]),
@@ -52,6 +57,7 @@ class AccountEvents:
         """
         return [
             {
+                "id": next(counter),
                 "user_id": str(uuid4()),
                 "name": fake.name(),
                 "email": fake.email(),

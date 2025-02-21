@@ -1,9 +1,12 @@
+import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
 from typing import List
 
 fake = Faker("pt_BR")
+
+counter = itertools.count(start=1)
 
 
 class InsuranceEvents:
@@ -14,6 +17,7 @@ class InsuranceEvents:
         """Gera apólices de seguro como dicionários."""
         return [
             {
+                "id": next(counter),
                 "policy_id": str(uuid4()),
                 "type": np.random.choice(["auto", "health", "home"]),
                 "coverage_amount": np.random.randint(5000, 50000),
@@ -30,6 +34,7 @@ class InsuranceEvents:
         """Gera reivindicações de seguro como dicionários."""
         return [
             {
+                "id": next(counter),
                 "claim_id": str(uuid4()),
                 "policy_id": str(uuid4()),
                 "amount_claimed": np.random.randint(1000, 20000),
@@ -44,6 +49,7 @@ class InsuranceEvents:
         """Gera entidades seguradas como dicionários."""
         return [
             {
+                "id": next(counter),
                 "entity_id": str(uuid4()),
                 "type": np.random.choice(["vehicle", "property", "life"]),
                 "description": fake.sentence(),
