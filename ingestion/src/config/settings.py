@@ -1,11 +1,27 @@
 import os
+from dotenv import load_dotenv
 
-DB_CONFIG = {
-    "dbname": os.getenv("POSTGRES_DB", "postgres"),
-    "user": os.getenv("POSTGRES_USER", "postgres"),
-    "password": os.getenv("POSTGRES_PASSWORD", "postgres"),
-    "host": os.getenv("POSTGRES_HOST", "localhost"),
-    "port": os.getenv("POSTGRES_PORT", "5432"),
+load_dotenv()
+
+
+DB_SECRETS = {
+    "dbname": os.getenv("DBNAME", "postgres"),
+    "user": os.getenv("USER", "postgres"),
+    "password": os.getenv("PASSWORD", "postgres"),
+    "host": os.getenv("HOST", "localhost"),
+    "port": os.getenv("PORT", "5432"),
 }
 
-REDIS_URL = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+KAFKA_CONFIG_PRODUCER = {
+    "bootstrap.servers": os.getenv("BOOTSTRAP", "localhost:9092"),
+}
+
+KAFKA_CONFIG_CONSUMER = {
+    "bootstrap.servers": os.getenv("BOOTSTRAP", "localhost:9092"),
+    "group.id": os.getenv("GROUP_ID", "wal_group"),
+    "auto.offset.reset": os.getenv("OFFSET_RESET", "earliest"),
+}
+
+TOPIC_NAME_CONSUMER = os.getenv("TOPIC_CONSUMER", "wal_topic")
+
+TOPIC_NAME_PRODUCER = os.getenv("TOPIC_PRODUCER", "wal_changes")

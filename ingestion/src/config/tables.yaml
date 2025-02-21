@@ -1,0 +1,19 @@
+raw_tables:
+  - accounts
+  - audits
+  - claims
+  - credit_scores
+  - entities
+  - insured_entities
+  - loans
+  - merchants
+  - payment_methods
+  - payments
+  - policies
+  - portfolios
+  - regulations
+  - risk_assessments
+  - subaccounts
+  - transactions
+  - user_verifications
+  - users
