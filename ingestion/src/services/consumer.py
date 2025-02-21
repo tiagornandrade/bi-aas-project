@@ -1,4 +1,6 @@
 from confluent_kafka import Consumer, KafkaException
+from datetime import datetime
+import uuid
 import json
 import psycopg2
 import psycopg2.extras
@@ -24,7 +26,7 @@ KAFKA_CONFIG = {
 }
 TOPIC_NAME = "wal_changes"
 
-LANDING_TABLES = {
+RAW_TABLES = {
     "accounts",
     "audits",
     "claims",
@@ -63,7 +65,7 @@ def connect_to_postgres():
 
 
 def consume_kafka_events():
-    """Consome eventos do Kafka e grava na tabela correspondente da camada LANDING"""
+    """Consome eventos do Kafka e grava na tabela correspondente da camada RAW"""
 
     conn = connect_to_postgres()
 
@@ -93,19 +95,31 @@ def consume_kafka_events():
                     logging.warning(f"⚠️ Evento inválido recebido: {event}")
                     continue
 
-                if table_name not in LANDING_TABLES:
+                if table_name not in RAW_TABLES:
                     logging.warning(
-                        f"⚠️ Tabela {table_name} não está na LANDING. Ignorando evento."
+                        f"⚠️ Tabela {table_name} não está na RAW. Ignorando evento."
                     )
                     continue
 
+                event_uuid = str(uuid.uuid4())
+                event_timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
                 with conn.cursor() as cur:
                     sql = f"""
-                        INSERT INTO landing.{table_name} (table_name, event_type, data, ingested_at)
-                        VALUES (%s, %s, %s::jsonb, CURRENT_TIMESTAMP);
+                        INSERT INTO raw.{table_name} (table_name, event_uuid, event_type, event_timestamp, payload, ingested_at)
+                        VALUES (%s, %s, %s, %s, %s::jsonb, CURRENT_TIMESTAMP);
                     """
-                    cur.execute(sql, (table_name, event_type, json.dumps(record)))
-                    logging.info(f"✅ Evento inserido em landing.{table_name}: {event}")
+                    cur.execute(
+                        sql,
+                        (
+                            table_name,
+                            event_uuid,
+                            event_type,
+                            event_timestamp,
+                            json.dumps(record),
+                        ),
+                    )
+                    logging.info(f"✅ Evento inserido em raw.{table_name}: {event}")
 
             except json.JSONDecodeError as e:
                 logging.error(f"🚨 Erro ao decodificar JSON: {e}")
