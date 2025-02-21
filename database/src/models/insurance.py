@@ -5,10 +5,6 @@ from datetime import datetime
 
 class Policy(Base):
     __tablename__ = "policies"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     policy_id = Column(String)
@@ -23,10 +19,6 @@ class Policy(Base):
 
 class Claim(Base):
     __tablename__ = "claims"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     claim_id = Column(String)
@@ -39,9 +31,6 @@ class Claim(Base):
 
 class InsuredEntity(Base):
     __tablename__ = "insured_entities"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     entity_id = Column(String)
@@ -79,7 +68,6 @@ class RawClaim(Base):
 
 class RawInsuredEntity(Base):
     __tablename__ = "raw_insured_entities"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     entity_id = Column(String)

@@ -5,10 +5,6 @@ from datetime import datetime
 
 class Transaction(Base):
     __tablename__ = "transactions"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     transaction_id = Column(String)
@@ -23,10 +19,6 @@ class Transaction(Base):
 
 class PaymentMethod(Base):
     __tablename__ = "payment_methods"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     method_id = Column(String)
@@ -38,9 +30,6 @@ class PaymentMethod(Base):
 
 class Merchant(Base):
     __tablename__ = "merchants"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     merchant_id = Column(String)
@@ -77,7 +66,6 @@ class RawPaymentMethod(Base):
 
 class RawMerchant(Base):
     __tablename__ = "raw_merchants"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     merchant_id = Column(String)

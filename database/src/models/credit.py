@@ -5,10 +5,6 @@ from datetime import datetime
 
 class CreditScore(Base):
     __tablename__ = "credit_scores"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     score_id = Column(String)
@@ -20,9 +16,6 @@ class CreditScore(Base):
 
 class RiskAssessment(Base):
     __tablename__ = "risk_assessments"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     assessment_id = Column(String)
@@ -46,7 +39,6 @@ class RawCreditScore(Base):
 
 class RawRiskAssessment(Base):
     __tablename__ = "raw_risk_assessments"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     assessment_id = Column(String)

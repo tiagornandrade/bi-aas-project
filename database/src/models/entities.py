@@ -5,9 +5,6 @@ from datetime import datetime
 
 class Entity(Base):
     __tablename__ = "entities"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     entity_id = Column(String)
@@ -17,7 +14,6 @@ class Entity(Base):
 
 class RawEntity(Base):
     __tablename__ = "raw_entities"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     entity_id = Column(String)

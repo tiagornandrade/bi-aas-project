@@ -6,9 +6,6 @@ from datetime import datetime
 
 class Audit(Base):
     __tablename__ = "audits"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     audit_id = Column(String, unique=True, nullable=False)
@@ -21,7 +18,6 @@ class Audit(Base):
 
 class RawAudit(Base):
     __tablename__ = "raw_audits"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     audit_id = Column(String, unique=True, nullable=False)

@@ -5,10 +5,6 @@ from datetime import datetime
 
 class Loan(Base):
     __tablename__ = "loans"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     loan_id = Column(String)
@@ -21,9 +17,6 @@ class Loan(Base):
 
 class Payment(Base):
     __tablename__ = "payments"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     payment_id = Column(String)
@@ -48,7 +41,6 @@ class RawLoan(Base):
 
 class RawPayment(Base):
     __tablename__ = "raw_payments"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     payment_id = Column(String)

@@ -5,10 +5,6 @@ from datetime import datetime
 
 class Regulation(Base):
     __tablename__ = "regulations"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     regulation_id = Column(String)
@@ -20,9 +16,6 @@ class Regulation(Base):
 
 class UserVerification(Base):
     __tablename__ = "user_verifications"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     verification_id = Column(String)
@@ -46,7 +39,6 @@ class RawRegulation(Base):
 
 class RawUserVerification(Base):
     __tablename__ = "raw_user_verifications"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     verification_id = Column(String)

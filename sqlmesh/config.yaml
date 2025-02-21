@@ -1,0 +1,15 @@
+gateways:
+  postgres:
+    connection:
+      type: postgres
+      host: "localhost"
+      user: "postgres"
+      password: "postgres"
+      port: 5432
+      database: "postgres"
+
+default_gateway: postgres
+
+model_defaults:
+  dialect: postgres
+  start: 2025-02-20

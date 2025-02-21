@@ -5,10 +5,6 @@ from datetime import datetime
 
 class Account(Base):
     __tablename__ = "accounts"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     account_id = Column(String)
@@ -22,10 +18,6 @@ class Account(Base):
 
 class Subaccount(Base):
     __tablename__ = "subaccounts"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     subaccount_id = Column(String)
@@ -37,9 +29,6 @@ class Subaccount(Base):
 
 class User(Base):
     __tablename__ = "users"
-<<<<<<< Updated upstream
-    __table_args__ = {"extend_existing": True}
-=======
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     user_id = Column(String)
@@ -75,7 +64,6 @@ class RawSubaccount(Base):
 
 class RawUser(Base):
     __tablename__ = "raw_users"
->>>>>>> Stashed changes
 
     id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
     user_id = Column(String)

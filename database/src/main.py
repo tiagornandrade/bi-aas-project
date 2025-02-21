@@ -1,4 +1,5 @@
 import logging
+import time
 from services.account import AccountService
 from services.audit import AuditService
 from services.compliance import ComplianceService
@@ -8,7 +9,6 @@ from services.insurance import InsuranceService
 from services.investments import PortfolioService
 from services.lending import LoanService
 from services.payment import TransactionService
-
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
@@ -28,80 +28,74 @@ def safe_insert(service, function_name, count):
     """Executa a inserção segura em um serviço, capturando e registrando erros."""
     function = getattr(service, function_name, None)
     if function is None or not callable(function):
-        logging.error(
-            f"Error: {function_name} not found or not callable in {service.__name__}"
-        )
+        logging.error(f"❌ {function_name} não encontrado em {service.__name__}")
         return []
 
     try:
         result = function(count)
     except TypeError as e:
-        logging.error(f"Type error executing {function_name}: {e}. Check arguments.")
+        logging.error(
+            f"❌ Erro de tipo em {function_name}: {e}. Verifique os argumentos."
+        )
         return []
     except Exception as e:
-        logging.error(f"Error executing {function_name}: {e}")
+        logging.error(f"❌ Erro ao executar {function_name}: {e}")
         return []
 
     if isinstance(result, list) and not result:
-        logging.warning(f"{function_name} did not insert any data.")
-    elif result is None:
-        logging.warning(f"{function_name} returned None. Verify insertion logic.")
-
-    logging.info(f"{function_name} completed with result: {result}")
-    return result or []
-
-
-# TODO Rename this here and in `safe_insert`
-def _extracted_from_safe_insert_4(service, function_name, count):
-    function = getattr(service, function_name, None)
-    if function is None or not callable(function):
-        logging.error(
-            f"Erro: {function_name} não encontrado ou não é uma função no serviço {service.__name__}"
-        )
-        return []
-
-    result = function(count)
-
-    if isinstance(result, list) and not result:
-        logging.warning(f"{function_name} não inseriu nenhum dado.")
-
+        logging.warning(f"⚠️ {function_name} não inseriu nenhum dado.")
     elif result is None:
         logging.warning(
-            f"{function_name} retornou None. Verifique a lógica de inserção."
+            f"⚠️ {function_name} retornou None. Verifique a lógica de inserção."
         )
+    else:
+        logging.info(f"✅ {function_name} inseriu {len(result)} registros.")
 
-    logging.info(f"{function_name} concluído: {result}")
     return result or []
 
 
 def main():
+    """Executa a inserção de dados continuamente."""
     operations = [
-        (AccountService, "insert_users", 10000),
-        (AccountService, "insert_accounts", 10000),
-        (AccountService, "insert_subaccounts", 10000),
-        (AuditService, "insert_audits", 10000),
-        (ComplianceService, "insert_regulations", 10000),
-        (ComplianceService, "insert_user_verification", 10000),
-        (CreditService, "insert_credit_scores", 10000),
-        (CreditService, "insert_risk_assessments", 10000),
-        (EntityService, "insert_entities", 10000),
-        (InsuranceService, "insert_policies", 10000),
-        (InsuranceService, "insert_claims", 10000),
-        (InsuranceService, "insert_insured_entities", 10000),
-        (PortfolioService, "insert_portfolios", 10000),
-        (LoanService, "insert_loans", 10000),
-        (LoanService, "insert_payments", 10000),
-        (TransactionService, "insert_transactions", 10000),
-        (TransactionService, "insert_payment_methods", 10000),
-        (TransactionService, "insert_merchants", 10000),
+        (AccountService, "insert_users", 500),
+        (AccountService, "insert_accounts", 500),
+        (AccountService, "insert_subaccounts", 500),
+        (AuditService, "insert_audits", 500),
+        (ComplianceService, "insert_regulations", 500),
+        (ComplianceService, "insert_user_verification", 500),
+        (CreditService, "insert_credit_scores", 500),
+        (CreditService, "insert_risk_assessments", 500),
+        (EntityService, "insert_entities", 500),
+        (InsuranceService, "insert_policies", 500),
+        (InsuranceService, "insert_claims", 500),
+        (InsuranceService, "insert_insured_entities", 500),
+        (PortfolioService, "insert_portfolios", 500),
+        (LoanService, "insert_loans", 500),
+        (LoanService, "insert_payments", 500),
+        (TransactionService, "insert_transactions", 500),
+        (TransactionService, "insert_payment_methods", 500),
+        (TransactionService, "insert_merchants", 500),
     ]
 
-    for service, function_name, count in operations:
-        logging.info(f"Iniciando {function_name}...")
-        safe_insert(service, function_name, count)
+    while True:
+        try:
+            logging.info("🔄 Iniciando novo ciclo de inserção de dados...")
 
-    logging.info("Dados inseridos com sucesso!")
+            for service, function_name, count in operations:
+                logging.info(f"▶️ Executando {function_name}...")
+                safe_insert(service, function_name, count)
+
+            logging.info(
+                "✅ Todos os dados foram inseridos. Aguardando 5 segundos antes do próximo ciclo...\n"
+            )
+        except Exception as e:
+            logging.error(f"❌ Erro durante o ciclo de inserção: {e}")
+
+        time.sleep(5)
 
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        logging.info("🛑 Execução interrompida pelo usuário.")
