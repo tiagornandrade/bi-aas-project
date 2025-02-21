@@ -20,7 +20,7 @@ class AccountService:
             for batch in batches:
                 users = [User(**user) for user in batch]
                 db.bulk_save_objects(users)
-                db.commit()
+            db.commit()
 
             return db.query(User).order_by(User.id.desc()).limit(count).all()
         except SQLAlchemyError as e:
@@ -54,7 +54,7 @@ class AccountService:
             ]
             for batch in batches:
                 db.bulk_save_objects(batch)
-                db.commit()
+            db.commit()
 
             return db.query(Account).order_by(Account.id.desc()).limit(count).all()
         except SQLAlchemyError as e:
@@ -94,7 +94,7 @@ class AccountService:
             ]
             for batch in batches:
                 db.bulk_save_objects(batch)
-                db.commit()
+            db.commit()
 
             return (
                 db.query(Subaccount).order_by(Subaccount.id.desc()).limit(count).all()
