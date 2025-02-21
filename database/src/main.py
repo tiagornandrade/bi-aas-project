@@ -78,15 +78,19 @@ def main():
     ]
 
     while True:
-        logging.info("🔄 Iniciando novo ciclo de inserção de dados...")
+        try:
+            logging.info("🔄 Iniciando novo ciclo de inserção de dados...")
 
-        for service, function_name, count in operations:
-            logging.info(f"▶️ Executando {function_name}...")
-            safe_insert(service, function_name, count)
+            for service, function_name, count in operations:
+                logging.info(f"▶️ Executando {function_name}...")
+                safe_insert(service, function_name, count)
 
-        logging.info(
-            "✅ Todos os dados foram inseridos. Aguardando 5 segundos antes do próximo ciclo...\n"
-        )
+            logging.info(
+                "✅ Todos os dados foram inseridos. Aguardando 5 segundos antes do próximo ciclo...\n"
+            )
+        except Exception as e:
+            logging.error(f"❌ Erro durante o ciclo de inserção: {e}")
+
         time.sleep(5)
 
 
