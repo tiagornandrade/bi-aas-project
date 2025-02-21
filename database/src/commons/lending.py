@@ -1,3 +1,4 @@
+import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
@@ -6,6 +7,8 @@ from typing import List
 
 fake = Faker("pt_BR")
 
+counter = itertools.count(start=1)
+
 
 class LendingEvents:
     @staticmethod
@@ -13,6 +16,7 @@ class LendingEvents:
         """Gera empréstimos como dicionários."""
         return [
             {
+                "id": next(counter),
                 "loan_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "amount": np.random.randint(1000, 50000),
@@ -27,6 +31,7 @@ class LendingEvents:
         """Gera pagamentos de empréstimos como dicionários."""
         return [
             {
+                "id": next(counter),
                 "payment_id": str(uuid4()),
                 "loan_id": str(uuid4()),
                 "amount": np.random.randint(100, 2000),
@@ -44,6 +49,7 @@ class LendingEvents:
         """
         return [
             {
+                "id": next(counter),
                 "score_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "score": np.random.randint(1, 1000),
@@ -60,6 +66,7 @@ class LendingEvents:
         """
         return [
             {
+                "id": next(counter),
                 "assessment_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "risk_level": np.random.choice(["low", "medium", "high"]),
