@@ -3,9 +3,9 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Account(Base):
+class RawAccount(Base):
     __tablename__ = "accounts"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     account_id = Column(String)
@@ -17,21 +17,21 @@ class Account(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class Subaccount(Base):
+class RawSubaccount(Base):
     __tablename__ = "subaccounts"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     subaccount_id = Column(String)
-    parent_account_id = Column(String, nullable=False)
+    parent_account_id = Column(String)
     purpose = Column(String)
     balance = Column(Integer)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class User(Base):
+class RawUser(Base):
     __tablename__ = "users"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String)

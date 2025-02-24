@@ -3,9 +3,9 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Policy(Base):
+class RawPolicy(Base):
     __tablename__ = "policies"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     policy_id = Column(String)
@@ -18,9 +18,9 @@ class Policy(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class Claim(Base):
+class RawClaim(Base):
     __tablename__ = "claims"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     claim_id = Column(String)
@@ -31,9 +31,9 @@ class Claim(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class InsuredEntity(Base):
+class RawInsuredEntity(Base):
     __tablename__ = "insured_entities"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)

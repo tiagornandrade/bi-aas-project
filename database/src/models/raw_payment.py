@@ -3,9 +3,9 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Transaction(Base):
+class RawTransaction(Base):
     __tablename__ = "transactions"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     transaction_id = Column(String)
@@ -18,9 +18,9 @@ class Transaction(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class PaymentMethod(Base):
+class RawPaymentMethod(Base):
     __tablename__ = "payment_methods"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     method_id = Column(String)
@@ -30,9 +30,9 @@ class PaymentMethod(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class Merchant(Base):
+class RawMerchant(Base):
     __tablename__ = "merchants"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     merchant_id = Column(String)

@@ -3,9 +3,9 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Portfolio(Base):
+class RawPortfolio(Base):
     __tablename__ = "portfolios"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     portfolio_id = Column(String)

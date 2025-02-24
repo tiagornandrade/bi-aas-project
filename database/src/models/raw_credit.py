@@ -3,9 +3,9 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class CreditScore(Base):
+class RawCreditScore(Base):
     __tablename__ = "credit_scores"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     score_id = Column(String)
@@ -15,9 +15,9 @@ class CreditScore(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class RiskAssessment(Base):
+class RawRiskAssessment(Base):
     __tablename__ = "risk_assessments"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     assessment_id = Column(String)

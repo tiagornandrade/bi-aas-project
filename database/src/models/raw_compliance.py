@@ -3,22 +3,21 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Regulation(Base):
+class RawRegulation(Base):
     __tablename__ = "regulations"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     regulation_id = Column(String)
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     jurisdiction = Column(String, nullable=False)
-    date = Column(DateTime, default=datetime.utcnow)
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class UserVerification(Base):
-    __tablename__ = "user_verifications"
-    __table_args__ = {"extend_existing": True}
+class RawUserVerification(Base):
+    __tablename__ = "regulations"
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     verification_id = Column(String)

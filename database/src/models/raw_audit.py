@@ -4,9 +4,9 @@ from datetime import timezone
 from datetime import datetime
 
 
-class Audit(Base):
+class RawAudit(Base):
     __tablename__ = "audits"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     audit_id = Column(String, unique=True, nullable=False)
