@@ -10,14 +10,16 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: postgres
+      POSTGRES_REPLICATION_USER: repl_user
+      POSTGRES_REPLICATION_PASSWORD: strongpassword
     volumes:
       - postgresql_master_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
     command: >
       postgres -c wal_level=logical
-               -c max_wal_senders=5
-               -c max_replication_slots=5
-               -c shared_preload_libraries='test_decoding'
+               -c max_wal_senders=15
+               -c max_replication_slots=15
+               -c shared_preload_libraries='pgoutput'
 
   postgresql-replica:
     image: postgres:15
@@ -33,10 +35,30 @@ services:
     volumes:
       - postgresql_replica_data:/var/lib/postgresql/data
     command: >
-      postgres -c wal_level=logical
-               -c max_wal_senders=5
-               -c max_replication_slots=5
+      bash -c "until pg_isready -h postgresql-primary -p 5432; do sleep 2; done &&
+               postgres -c wal_level=logical
+                        -c max_wal_senders=15
+                        -c max_replication_slots=15"
+
+  couchdb:
+    image: couchdb:3.3.2
+    container_name: couchdb
+    restart: always
+    ports:
+      - "5984:5984"
+    environment:
+      COUCHDB_USER: admin
+      COUCHDB_PASSWORD: password
+    volumes:
+      - couchdb_data:/opt/couchdb/data
+    networks:
+      - etl_network
 
 volumes:
   postgresql_master_data:
   postgresql_replica_data:
+  couchdb_data:
+
+networks:
+  etl_network:
+    driver: bridge

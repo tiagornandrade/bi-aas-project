@@ -6,6 +6,7 @@ from datetime import datetime
 
 class Audit(Base):
     __tablename__ = "audits"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
