@@ -1,6 +1,5 @@
-from sqlalchemy import Column, String, DateTime, Integer
+from sqlalchemy import Column, String, Integer, DateTime, JSON
 from src.utils.db import Base
-from datetime import timezone
 from datetime import datetime
 
 
@@ -9,9 +8,9 @@ class RawAudit(Base):
     __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    audit_id = Column(String, unique=True, nullable=False)
-    entity_id = Column(String, nullable=False)
-    status = Column(String, nullable=False)
-    findings = Column(String, nullable=False)
-    date = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+    table_name = Column(String, nullable=False)
+    event_uuid = Column(String, nullable=False)
+    event_type = Column(String, nullable=False)
+    event_timestamp = Column(DateTime, nullable=False)
+    payload = Column(JSON, nullable=False)
+    ingested_at = Column(DateTime, default=datetime.utcnow, nullable=False)

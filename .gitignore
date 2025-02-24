@@ -15,3 +15,4 @@ database/.env
 ingestion/.env
 .idea
 .vscode
+database/*.xml

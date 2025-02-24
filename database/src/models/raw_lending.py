@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, DateTime, Float
+from sqlalchemy import Column, String, Integer, DateTime, JSON
 from src.utils.db import Base
 from datetime import datetime
 
@@ -8,12 +8,12 @@ class RawLoan(Base):
     __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    loan_id = Column(String)
-    user_id = Column(String)
-    amount = Column(Integer)
-    interest_rate = Column(Float)
-    term = Column(Integer)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    table_name = Column(String, nullable=False)
+    event_uuid = Column(String, nullable=False)
+    event_type = Column(String, nullable=False)
+    event_timestamp = Column(DateTime, nullable=False)
+    payload = Column(JSON, nullable=False)
+    ingested_at = Column(DateTime, default=datetime.utcnow, nullable=False)
 
 
 class RawPayment(Base):
@@ -21,9 +21,9 @@ class RawPayment(Base):
     __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    payment_id = Column(String)
-    loan_id = Column(String)
-    amount = Column(Integer)
-    date = Column(DateTime, default=datetime.utcnow)
-    status = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    table_name = Column(String, nullable=False)
+    event_uuid = Column(String, nullable=False)
+    event_type = Column(String, nullable=False)
+    event_timestamp = Column(DateTime, nullable=False)
+    payload = Column(JSON, nullable=False)
+    ingested_at = Column(DateTime, default=datetime.utcnow, nullable=False)

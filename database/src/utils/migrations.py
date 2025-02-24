@@ -7,6 +7,15 @@ from src.models.insurance import Base
 from src.models.investments import Base
 from src.models.lending import Base
 from src.models.payment import Base
+from src.models.raw_account import Base
+from src.models.raw_audit import Base
+from src.models.raw_compliance import Base
+from src.models.raw_credit import Base
+from src.models.raw_entities import Base
+from src.models.raw_insurance import Base
+from src.models.raw_investments import Base
+from src.models.raw_lending import Base
+from src.models.raw_payment import Base
 from src.utils.db import engine, Base
 from sqlalchemy import MetaData, text
 from sqlalchemy.exc import SQLAlchemyError
