@@ -1,4 +1,5 @@
-from confluent_kafka import Producer
+from confluent_kafka import Producer, KafkaException, KafkaError
+from confluent_kafka.admin import AdminClient, NewTopic
 import json
 import psycopg2
 import re
@@ -20,9 +21,31 @@ TOPIC_NAME = "wal_changes"
 DLQ_TOPIC = "wal_changes_dlq"
 
 producer = Producer(KAFKA_CONFIG)
+admin_client = AdminClient(KAFKA_CONFIG)
 
 WAL_PATTERN = re.compile(r"table public\.(\w+): (\w+): (.*)")
 
+def create_topics(topics):
+    """Cria os tópicos no Kafka se ainda não existirem."""
+    existing_topics = admin_client.list_topics(timeout=5).topics.keys()
+    new_topics = [
+        NewTopic(topic, num_partitions=3, replication_factor=1)
+        for topic in topics if topic not in existing_topics
+    ]
+
+    if new_topics:
+        print(f"📌 Criando tópicos: {', '.join(t.name for t in new_topics)}")
+        future_map = admin_client.create_topics(new_topics)
+
+        for topic, future in future_map.items():
+            try:
+                future.result()
+                print(f"✅ Tópico '{topic}' criado com sucesso!")
+            except KafkaException as e:
+                if e.args[0].code() == KafkaError.TOPIC_ALREADY_EXISTS:
+                    print(f"⚠️ Tópico '{topic}' já existe.")
+                else:
+                    print(f"❌ Erro ao criar tópico '{topic}': {e}")
 
 def delivery_report(err, msg):
     """Callback para confirmar entrega ao Kafka e enviar para DLQ em caso de erro."""
@@ -47,7 +70,6 @@ def delivery_report(err, msg):
     else:
         print(f"✅ Mensagem entregue para {msg.topic()} [{msg.partition()}]")
 
-
 def capture_wal_changes():
     """Captura mudanças do WAL e envia para o Kafka"""
     with psycopg2.connect(**DB_CONFIG) as conn:
@@ -64,19 +86,21 @@ def capture_wal_changes():
                     columns = re.findall(r"(\w+)\[.*?\]:'?([^']+)'?", raw_values)
                     record = dict(columns)
 
+                    topic_name = f"wal_changes_{table_name}"
+
                     message = json.dumps(
                         {"table": table_name, "type": change_type, "data": record}
                     )
 
                     try:
                         producer.produce(
-                            TOPIC_NAME,
+                            topic_name,
                             value=message.encode("utf-8"),
                             callback=delivery_report,
                         )
                         producer.flush()
 
-                        print(f"🚀 Evento enviado para Kafka: {message}")
+                        print(f"🚀 Evento enviado para Kafka ({topic_name}): {message}")
                     except Exception as e:
                         print(f"❌ Erro ao produzir evento: {e}")
                         dlq_message = {
@@ -100,3 +124,8 @@ def capture_wal_changes():
                             print(f"🚨 Falha ao enviar para DLQ: {dlq_err}")
 
     time.sleep(1)
+
+
+if __name__ == "__main__":
+    create_topics([TOPIC_NAME, DLQ_TOPIC])
+    capture_wal_changes()

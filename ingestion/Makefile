@@ -22,20 +22,26 @@ setup:
 	$(VENV)/bin/$(PIP) install -r requirements.txt
 	@echo "✅ Configuração concluída!"
 
+# Subir serviços com Docker Compose
 .PHONY: up
 up:
-	@echo "🚀 Subindo containers Docker..."
-	$(DOCKER_COMPOSE) up -d
+	@echo "⬆️ Iniciando os serviços..."
+	@docker-compose up -d
+	@echo "✅ Serviços iniciados!"
 
+# Derrubar serviços com Docker Compose
 .PHONY: down
 down:
-	@echo "🛑 Parando containers Docker..."
-	$(DOCKER_COMPOSE) down
+	@echo "⬇️ Parando os serviços..."
+	@docker-compose down
+	@echo "✅ Serviços parados!"
 
+# Reiniciar serviços com Docker Compose
 .PHONY: restart
 restart:
-	@echo "🔄 Reiniciando containers Docker..."
-	$(DOCKER_COMPOSE) restart
+	@echo "🔄 Reiniciando os serviços..."
+	@docker-compose restart
+	@echo "✅ Serviços reiniciados!"
 
 .PHONY: listen
 listen:
