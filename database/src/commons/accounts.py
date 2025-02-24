@@ -1,49 +1,37 @@
-import itertools
-import numpy as np
+import random
 from uuid import uuid4
 from faker import Faker
 from typing import List
 
 fake = Faker("pt_BR")
 
-counter = itertools.count(start=1)
-
 
 class AccountEvents:
+
     @staticmethod
     def generate_accounts(count: int) -> List[dict]:
-        """Gera contas como dicionários.
-
-        Cria uma lista de dicionários, onde cada dicionário representa
-        uma conta com detalhes como ID, tipo, saldo, moeda, status e ID do usuário.
-        """
+        """Gera contas como dicionários."""
         return [
             {
-                "id": next(counter),
                 "account_id": str(uuid4()),
-                "account_type": np.random.choice(["personal", "business"]),
-                "balance": np.random.randint(1, 1000),
-                "currency": np.random.choice(["BRL", "USD"]),
-                "status": np.random.choice(["active", "inactive"]),
                 "user_id": str(uuid4()),
+                "balance": round(random.uniform(100, 10000), 2),
+                "currency": random.choice(["USD", "BRL", "EUR"]),
+                "created_at": fake.date_time_this_year(),
+                "account_type": random.choice(["personal", "business"]),
             }
             for _ in range(count)
         ]
 
     @staticmethod
     def generate_subaccounts(count: int) -> List[dict]:
-        """Gera subcontas como dicionários.
-
-        Cria uma lista de dicionários, onde cada dicionário representa
-        uma subconta com detalhes como ID, ID da conta pai, propósito e saldo.
-        """
+        """Gera subcontas como dicionários."""
         return [
             {
-                "id": next(counter),
                 "subaccount_id": str(uuid4()),
                 "parent_account_id": str(uuid4()),
-                "purpose": np.random.choice(["savings", "investment"]),
-                "balance": np.random.randint(1, 1000),
+                "balance": round(random.uniform(50, 5000), 2),
+                "created_at": fake.date_time_this_year(),
             }
             for _ in range(count)
         ]
@@ -57,7 +45,6 @@ class AccountEvents:
         """
         return [
             {
-                "id": next(counter),
                 "user_id": str(uuid4()),
                 "name": fake.name(),
                 "email": fake.email(),

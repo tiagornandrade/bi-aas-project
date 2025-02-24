@@ -3,9 +3,9 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Loan(Base):
+class RawLoan(Base):
     __tablename__ = "loans"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     loan_id = Column(String)
@@ -16,9 +16,9 @@ class Loan(Base):
     created_at = Column(DateTime, default=datetime.utcnow)
 
 
-class Payment(Base):
+class RawPayment(Base):
     __tablename__ = "payments"
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     payment_id = Column(String)

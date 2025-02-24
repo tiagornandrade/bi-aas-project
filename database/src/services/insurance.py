@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.insurance import Policy, Claim, InsuredEntity
 from commons.insurance import InsuranceEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class InsuranceService:

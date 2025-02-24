@@ -1,12 +1,9 @@
+import logging
 from utils.db import SessionLocal
 from models.compliance import Regulation, UserVerification
 from commons.compliance import CompliancesEvents
 
-import logging
-
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class ComplianceService:

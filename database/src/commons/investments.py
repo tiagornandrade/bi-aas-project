@@ -1,4 +1,3 @@
-import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
@@ -6,8 +5,6 @@ from typing import List
 
 
 fake = Faker("pt_BR")
-
-counter = itertools.count(start=1)
 
 
 class InvestmentsEvents:
@@ -18,7 +15,6 @@ class InvestmentsEvents:
         """Gera portfólios como dicionários."""
         return [
             {
-                "id": next(counter),
                 "portfolio_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "total_value": np.random.randint(1000, 100000),
@@ -37,7 +33,6 @@ class InvestmentsEvents:
         """
         return [
             {
-                "id": next(counter),
                 "transaction_id": str(uuid4()),
                 "portfolio_id": str(uuid4()),
                 "asset_id": str(uuid4()),
@@ -56,7 +51,6 @@ class InvestmentsEvents:
         """
         return [
             {
-                "id": next(counter),
                 "portfolio_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "total_value": np.random.randint(1, 1000),

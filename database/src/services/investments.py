@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.investments import Portfolio
 from commons.investments import InvestmentsEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class PortfolioService:

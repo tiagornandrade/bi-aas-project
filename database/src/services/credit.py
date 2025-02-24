@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.credit import CreditScore, RiskAssessment
 from commons.credit import CreditsEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class CreditService:

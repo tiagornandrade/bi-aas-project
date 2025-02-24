@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.audit import Audit
 from commons.audits import AuditsEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class AuditService:

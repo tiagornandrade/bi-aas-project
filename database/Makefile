@@ -11,10 +11,10 @@ run-migrations:
 	python src/utils/migrations.py
 
 run-main:
-	export PYTHONPATH="${PYTHONPATH}:$(pwd)" && \
 	python src/main.py
 
 # export $(xargs <.env)
+# export PYTHONPATH="${PYTHONPATH}:$(pwd)"
 
 install:
 	pip install -r requirements.txt

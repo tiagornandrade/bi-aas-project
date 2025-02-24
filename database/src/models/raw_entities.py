@@ -3,13 +3,11 @@ from src.utils.db import Base
 from datetime import datetime
 
 
-class Portfolio(Base):
-    __tablename__ = "portfolios"
-    __table_args__ = {"extend_existing": True}
+class RawEntity(Base):
+    __tablename__ = "entities"
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    portfolio_id = Column(String)
-    user_id = Column(String)
-    total_value = Column(Integer)
-    risk_profile = Column(String)
+    entity_id = Column(String)
+    name = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)
