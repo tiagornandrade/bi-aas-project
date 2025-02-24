@@ -5,8 +5,7 @@ from datetime import datetime
 
 class Portfolio(Base):
     __tablename__ = "portfolios"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     portfolio_id = Column(String)
@@ -18,8 +17,7 @@ class Portfolio(Base):
 
 class RawPortfolio(Base):
     __tablename__ = "portfolios"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     portfolio_id = Column(String)

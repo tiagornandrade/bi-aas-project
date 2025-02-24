@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.entities import Entity
 from commons.entities import EntityEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class EntityService:

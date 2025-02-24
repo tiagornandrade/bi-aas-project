@@ -5,8 +5,7 @@ from datetime import datetime
 
 class Policy(Base):
     __tablename__ = "policies"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     policy_id = Column(String)
@@ -21,8 +20,7 @@ class Policy(Base):
 
 class Claim(Base):
     __tablename__ = "claims"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     claim_id = Column(String)
@@ -35,8 +33,7 @@ class Claim(Base):
 
 class InsuredEntity(Base):
     __tablename__ = "insured_entities"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)
@@ -48,8 +45,7 @@ class InsuredEntity(Base):
 
 class RawPolicy(Base):
     __tablename__ = "policies"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     policy_id = Column(String)
@@ -64,8 +60,7 @@ class RawPolicy(Base):
 
 class RawClaim(Base):
     __tablename__ = "claims"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     claim_id = Column(String)
@@ -78,8 +73,7 @@ class RawClaim(Base):
 
 class RawInsuredEntity(Base):
     __tablename__ = "insured_entities"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)

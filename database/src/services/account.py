@@ -1,13 +1,9 @@
 import logging
-import numpy as np
-from sqlalchemy.exc import SQLAlchemyError
 from src.utils.db import SessionLocal
 from src.models.account import Account, Subaccount, User
 from src.commons.accounts import AccountEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class AccountService:

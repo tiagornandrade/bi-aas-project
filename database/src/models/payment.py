@@ -5,8 +5,7 @@ from datetime import datetime
 
 class Transaction(Base):
     __tablename__ = "transactions"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     transaction_id = Column(String)
@@ -21,8 +20,7 @@ class Transaction(Base):
 
 class PaymentMethod(Base):
     __tablename__ = "payment_methods"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     method_id = Column(String)
@@ -34,8 +32,7 @@ class PaymentMethod(Base):
 
 class Merchant(Base):
     __tablename__ = "merchants"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     merchant_id = Column(String)
@@ -47,8 +44,7 @@ class Merchant(Base):
 
 class RawTransaction(Base):
     __tablename__ = "transactions"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     transaction_id = Column(String)
@@ -63,8 +59,7 @@ class RawTransaction(Base):
 
 class RawPaymentMethod(Base):
     __tablename__ = "payment_methods"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     method_id = Column(String)
@@ -76,8 +71,7 @@ class RawPaymentMethod(Base):
 
 class RawMerchant(Base):
     __tablename__ = "merchants"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     merchant_id = Column(String)

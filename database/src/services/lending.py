@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.lending import Loan, Payment
 from commons.lending import LendingEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class LoanService:

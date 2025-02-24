@@ -5,8 +5,7 @@ from datetime import datetime
 
 class Entity(Base):
     __tablename__ = "entities"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)
@@ -16,8 +15,7 @@ class Entity(Base):
 
 class RawEntity(Base):
     __tablename__ = "entities"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)

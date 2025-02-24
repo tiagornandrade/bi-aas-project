@@ -5,8 +5,7 @@ from datetime import datetime
 
 class CreditScore(Base):
     __tablename__ = "credit_scores"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     score_id = Column(String)
@@ -18,8 +17,7 @@ class CreditScore(Base):
 
 class RiskAssessment(Base):
     __tablename__ = "risk_assessments"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     assessment_id = Column(String)
@@ -32,8 +30,7 @@ class RiskAssessment(Base):
 
 class RawCreditScore(Base):
     __tablename__ = "credit_scores"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     score_id = Column(String)
@@ -45,8 +42,7 @@ class RawCreditScore(Base):
 
 class RawRiskAssessment(Base):
     __tablename__ = "risk_assessments"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     assessment_id = Column(String)

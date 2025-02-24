@@ -5,8 +5,7 @@ from datetime import datetime
 
 class Account(Base):
     __tablename__ = "accounts"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     account_id = Column(String)
@@ -20,8 +19,7 @@ class Account(Base):
 
 class Subaccount(Base):
     __tablename__ = "subaccounts"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     subaccount_id = Column(String)
@@ -33,8 +31,7 @@ class Subaccount(Base):
 
 class User(Base):
     __tablename__ = "users"
-    __table_args__ = {"schema": "public"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "public", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String)
@@ -46,8 +43,7 @@ class User(Base):
 
 class RawAccount(Base):
     __tablename__ = "accounts"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     account_id = Column(String)
@@ -61,8 +57,7 @@ class RawAccount(Base):
 
 class RawSubaccount(Base):
     __tablename__ = "subaccounts"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     subaccount_id = Column(String)
@@ -74,8 +69,7 @@ class RawSubaccount(Base):
 
 class RawUser(Base):
     __tablename__ = "users"
-    __table_args__ = {"schema": "raw"}
-    __table_args__ = {"extend_existing": True}
+    __table_args__ = {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String)

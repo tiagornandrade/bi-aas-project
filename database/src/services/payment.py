@@ -3,9 +3,7 @@ from utils.db import SessionLocal
 from models.payment import Transaction, PaymentMethod, Merchant
 from commons.payments import PaymentsEvents
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger(__name__)
 
 
 class TransactionService:
