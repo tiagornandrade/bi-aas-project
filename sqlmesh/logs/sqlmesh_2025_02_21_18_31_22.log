@@ -1,5 +1,0 @@
-2025-02-21 18:31:22,302 - MainThread - sqlmesh.core.config.connection - INFO - Creating new DuckDB adapter for data files: {'database.duckdb'} (connection.py:309)
-2025-02-21 18:31:22,504 - MainThread - sqlmesh.core.config.connection - INFO - Using existing DuckDB adapter due to overlapping data file: database.duckdb (connection.py:305)
-2025-02-21 18:31:22,530 - MainThread - sqlmesh.core.state_sync.engine_adapter - INFO - Compacting 1 intervals for 1 snapshots (engine_adapter.py:1122)
-2025-02-21 18:31:22,530 - MainThread - sqlmesh.core.state_sync.engine_adapter - INFO - Pushing intervals for snapshot SnapshotId<"database"."main"."raw_accounts": 4252167850> (engine_adapter.py:1324)
-2025-02-21 18:31:22,592 - MainThread - root - INFO - Shutting down the event dispatcher (dispatcher.py:159)
