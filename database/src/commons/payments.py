@@ -1,12 +1,9 @@
-import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
 from typing import List
 
 fake = Faker("pt_BR")
-
-counter = itertools.count(start=1)
 
 
 class PaymentsEvents:
@@ -17,7 +14,6 @@ class PaymentsEvents:
         """Gera transações como dicionários."""
         return [
             {
-                "id": next(counter),
                 "transaction_id": str(uuid4()),
                 "amount": np.random.randint(10, 5000),
                 "currency": np.random.choice(["BRL", "USD", "EUR"]),
@@ -34,7 +30,6 @@ class PaymentsEvents:
         """Gera métodos de pagamento como dicionários."""
         return [
             {
-                "id": next(counter),
                 "method_id": str(uuid4()),
                 "type": np.random.choice(
                     ["credit_card", "debit_card", "pix", "paypal"]
@@ -50,7 +45,6 @@ class PaymentsEvents:
         """Gera comerciantes como dicionários."""
         return [
             {
-                "id": next(counter),
                 "merchant_id": str(uuid4()),
                 "name": fake.company(),
                 "category": np.random.choice(["retail", "services", "ecommerce"]),

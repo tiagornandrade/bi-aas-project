@@ -1,12 +1,9 @@
-import itertools
 import numpy as np
 from uuid import uuid4
 from faker import Faker
 from typing import List
 
 fake = Faker("pt_BR")
-
-counter = itertools.count(start=1)
 
 
 class CreditsEvents:
@@ -17,7 +14,6 @@ class CreditsEvents:
         """Gera pontuações de crédito como dicionários."""
         return [
             {
-                "id": next(counter),
                 "score_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "score": np.random.randint(300, 850),
@@ -31,7 +27,6 @@ class CreditsEvents:
         """Gera avaliações de risco como dicionários."""
         return [
             {
-                "id": next(counter),
                 "assessment_id": str(uuid4()),
                 "user_id": str(uuid4()),
                 "risk_level": np.random.choice(["low", "medium", "high"]),

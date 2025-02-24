@@ -1,77 +1,89 @@
-from sqlalchemy import Column, String, Integer, TIMESTAMP, BigInteger
+from sqlalchemy import Column, String, Integer, DateTime
 from src.utils.db import Base
 from datetime import datetime
 
 
 class Policy(Base):
     __tablename__ = "policies"
+    __table_args__ = {"schema": "public"}
+    __table_args__ = {"extend_existing": True}
 
-    id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
+    id = Column(Integer, primary_key=True, autoincrement=True)
     policy_id = Column(String)
     type = Column(String)
     coverage_amount = Column(Integer)
     premium = Column(Integer)
-    start_date = Column(TIMESTAMP, default=datetime.utcnow)
-    end_date = Column(TIMESTAMP, default=datetime.utcnow)
+    start_date = Column(DateTime, default=datetime.utcnow)
+    end_date = Column(DateTime, default=datetime.utcnow)
     user_id = Column(String)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class Claim(Base):
     __tablename__ = "claims"
+    __table_args__ = {"schema": "public"}
+    __table_args__ = {"extend_existing": True}
 
-    id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
+    id = Column(Integer, primary_key=True, autoincrement=True)
     claim_id = Column(String)
     policy_id = Column(String)
     amount_claimed = Column(Integer)
     status = Column(String)
-    filed_date = Column(TIMESTAMP, default=datetime.utcnow)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    filed_date = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class InsuredEntity(Base):
     __tablename__ = "insured_entities"
+    __table_args__ = {"schema": "public"}
+    __table_args__ = {"extend_existing": True}
 
-    id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
+    id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)
     type = Column(String)
     description = Column(String)
     value = Column(Integer)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class RawPolicy(Base):
-    __tablename__ = "raw_policies"
+    __tablename__ = "policies"
+    __table_args__ = {"schema": "raw"}
+    __table_args__ = {"extend_existing": True}
 
-    id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
+    id = Column(Integer, primary_key=True, autoincrement=True)
     policy_id = Column(String)
     type = Column(String)
     coverage_amount = Column(Integer)
     premium = Column(Integer)
-    start_date = Column(TIMESTAMP, default=datetime.utcnow)
-    end_date = Column(TIMESTAMP, default=datetime.utcnow)
+    start_date = Column(DateTime, default=datetime.utcnow)
+    end_date = Column(DateTime, default=datetime.utcnow)
     user_id = Column(String)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class RawClaim(Base):
-    __tablename__ = "raw_claims"
+    __tablename__ = "claims"
+    __table_args__ = {"schema": "raw"}
+    __table_args__ = {"extend_existing": True}
 
-    id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
+    id = Column(Integer, primary_key=True, autoincrement=True)
     claim_id = Column(String)
     policy_id = Column(String)
     amount_claimed = Column(Integer)
     status = Column(String)
-    filed_date = Column(TIMESTAMP, default=datetime.utcnow)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    filed_date = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 class RawInsuredEntity(Base):
-    __tablename__ = "raw_insured_entities"
+    __tablename__ = "insured_entities"
+    __table_args__ = {"schema": "raw"}
+    __table_args__ = {"extend_existing": True}
 
-    id = Column(BigInteger, primary_key=True, server_default="AUTOINCREMENT")
+    id = Column(Integer, primary_key=True, autoincrement=True)
     entity_id = Column(String)
     type = Column(String)
     description = Column(String)
     value = Column(Integer)
-    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    created_at = Column(DateTime, default=datetime.utcnow)
