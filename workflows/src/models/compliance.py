@@ -5,6 +5,7 @@ from datetime import datetime
 
 class Regulation(Base):
     __tablename__ = "regulations"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -18,6 +19,7 @@ class Regulation(Base):
 
 class UserVerification(Base):
     __tablename__ = "user_verifications"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)

@@ -5,6 +5,7 @@ from datetime import datetime
 
 class CreditScore(Base):
     __tablename__ = "credit_scores"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -17,6 +18,7 @@ class CreditScore(Base):
 
 class RiskAssessment(Base):
     __tablename__ = "risk_assessments"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)

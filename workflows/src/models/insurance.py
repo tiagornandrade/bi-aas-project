@@ -5,6 +5,7 @@ from datetime import datetime
 
 class Policy(Base):
     __tablename__ = "policies"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -20,6 +21,7 @@ class Policy(Base):
 
 class Claim(Base):
     __tablename__ = "claims"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -33,6 +35,7 @@ class Claim(Base):
 
 class InsuredEntity(Base):
     __tablename__ = "insured_entities"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)

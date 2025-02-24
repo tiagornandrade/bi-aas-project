@@ -5,6 +5,7 @@ from datetime import datetime
 
 class Loan(Base):
     __tablename__ = "loans"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -18,6 +19,7 @@ class Loan(Base):
 
 class Payment(Base):
     __tablename__ = "payments"
+    __table_args__ = {"schema": "public"}
     __table_args__ = {"extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
