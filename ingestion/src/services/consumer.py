@@ -160,12 +160,12 @@ def consume_kafka_events():
 
 
 def consume_dlq_events():
-    """Consome eventos da DLQ e tenta reprocessá-los."""
+    """Consome eventos da DLQ e insere na tabela raw.dlq_events."""
     conn = connect_to_postgres()
     consumer = Consumer(KAFKA_CONFIG)
     consumer.subscribe([DLQ_TOPIC])
 
-    logging.info("📥 Iniciando consumo da DLQ para reprocessamento...")
+    logging.info("📥 Iniciando consumo da DLQ e gravação em raw.dlq_events...")
 
     try:
         while True:
@@ -179,10 +179,32 @@ def consume_dlq_events():
                 continue
 
             event = json.loads(msg.value().decode("utf-8"))
-            logging.info(f"🔄 Tentando reprocessar evento da DLQ: {event}")
+            logging.info(f"📌 Recebido evento da DLQ: {event}")
 
-            if process_event(conn, event):
-                logging.info(f"✅ Evento reprocessado com sucesso: {event}")
+            table_name = event.get("table")
+            event_type = event.get("type")
+            record = event.get("data")
+            error_message = event.get("error", "Erro desconhecido")
+
+            if not table_name or not record:
+                logging.warning(f"⚠️ Evento inválido na DLQ: {event}")
+                continue
+
+            event_uuid = str(uuid.uuid4())
+            event_timestamp = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+
+            with conn.cursor() as cur:
+                sql = """
+                    INSERT INTO raw.dlq_events (table_name, event_uuid, event_type, event_timestamp, payload, error_message, ingested_at)
+                    VALUES (%s, %s, %s, %s, %s::jsonb, %s, CURRENT_TIMESTAMP);
+                """
+                cur.execute(
+                    sql,
+                    (table_name, event_uuid, event_type, event_timestamp, json.dumps(record), error_message),
+                )
+                logging.info(f"✅ Evento inserido na raw.dlq_events: {event}")
+
+            consumer.commit(msg)
 
     except KeyboardInterrupt:
         logging.info("🛑 Interrompendo consumo da DLQ...")
