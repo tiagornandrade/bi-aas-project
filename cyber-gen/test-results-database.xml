@@ -1,0 +1,1061 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="5" failures="0" skipped="0" tests="17" time="2.845" timestamp="2025-02-24T11:08:33.121686" hostname="MacBook-Pro-de-Tiago.local"><testcase classname="tests.test_users_service" name="test_insert_users_happy_path[zero_users]" time="0.266" /><testcase classname="tests.test_users_service" name="test_insert_users_happy_path[one_user]" time="0.128" /><testcase classname="tests.test_users_service" name="test_insert_users_happy_path[multiple_users]" time="0.128" /><testcase classname="tests.test_users_service" name="test_insert_users_rollback" time="0.142" /><testcase classname="tests.test_users_service" name="test_insert_accounts_happy_path[zero_accounts]" time="0.160" /><testcase classname="tests.test_users_service" name="test_insert_accounts_happy_path[one_account]" time="0.158" /><testcase classname="tests.test_users_service" name="test_insert_accounts_happy_path[multiple_accounts]" time="0.158" /><testcase classname="tests.test_users_service" name="test_insert_accounts_rollback" time="0.143" /><testcase classname="tests.test_users_service" name="test_insert_subaccounts_happy_path[zero_subaccounts]" time="0.140" /><testcase classname="tests.test_users_service" name="test_insert_subaccounts_happy_path[one_subaccount]" time="0.168" /><testcase classname="tests.test_users_service" name="test_insert_subaccounts_happy_path[multiple_subaccounts]" time="0.161" /><testcase classname="tests.test_users_service" name="test_insert_subaccounts_rollback" time="0.153" /><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_error_handling" time="0.011"><error message="failed on setup with &quot;sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw&#10;[SQL: &#10;CREATE TABLE raw.accounts (&#10;&#09;id INTEGER NOT NULL, &#10;&#09;table_name VARCHAR NOT NULL, &#10;&#09;event_uuid VARCHAR NOT NULL, &#10;&#09;event_type VARCHAR NOT NULL, &#10;&#09;event_timestamp DATETIME NOT NULL, &#10;&#09;payload JSON NOT NULL, &#10;&#09;ingested_at DATETIME NOT NULL, &#10;&#09;PRIMARY KEY (id)&#10;)&#10;&#10;]&#10;(Background on this error at: https://sqlalche.me/e/20/e3q8)&quot;">self = &lt;sqlalchemy.engine.base.Connection object at 0x1181f27a0&gt;
+dialect = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1181f2740&gt;
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x1181fd690&gt;
+statement = &lt;sqlalchemy.dialects.sqlite.base.SQLiteDDLCompiler object at 0x1181e19f0&gt;
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -&gt; CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+&gt;                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1181f2740&gt;
+cursor = &lt;sqlite3.Cursor object at 0x118419140&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x1181fd690&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: unknown database raw
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.fixture(scope="function")
+    def test_engine():
+        """
+        Configura um banco de dados SQLite em memória para cada teste.
+        """
+        test_engine = create_engine("sqlite:///:memory:")
+
+        with test_engine.connect() as conn:
+            conn.execute(text("PRAGMA foreign_keys = OFF;"))
+            Base.metadata.drop_all(conn)
+&gt;           Base.metadata.create_all(conn)
+
+tests/test_utils_migrations.py:63:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/schema.py:5825: in create_all
+    bind._run_ddl_visitor(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2439: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:918: in visit_metadata
+    self.traverse_single(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:956: in visit_table
+    )._invoke_with(self.connection)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:314: in _invoke_with
+    return bind.execute(self)
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1408: in execute
+    return meth(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:180: in _execute_on_connection
+    return connection._execute_ddl(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1519: in _execute_ddl
+    ret = self._execute_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1839: in _execute_context
+    return self._exec_single_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1979: in _exec_single_context
+    self._handle_dbapi_exception(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1181f2740&gt;
+cursor = &lt;sqlite3.Cursor object at 0x118419140&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x1181fd690&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw
+E       [SQL:
+E       CREATE TABLE raw.accounts (
+E       	id INTEGER NOT NULL,
+E       	table_name VARCHAR NOT NULL,
+E       	event_uuid VARCHAR NOT NULL,
+E       	event_type VARCHAR NOT NULL,
+E       	event_timestamp DATETIME NOT NULL,
+E       	payload JSON NOT NULL,
+E       	ingested_at DATETIME NOT NULL,
+E       	PRIMARY KEY (id)
+E       )
+E
+E       ]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError</error></testcase><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_add_columns[test_table-&lt;lambda&gt;-&lt;lambda&gt;-expected_alter_statements0]" time="0.005"><error message="failed on setup with &quot;sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw&#10;[SQL: &#10;CREATE TABLE raw.accounts (&#10;&#09;id INTEGER NOT NULL, &#10;&#09;table_name VARCHAR NOT NULL, &#10;&#09;event_uuid VARCHAR NOT NULL, &#10;&#09;event_type VARCHAR NOT NULL, &#10;&#09;event_timestamp DATETIME NOT NULL, &#10;&#09;payload JSON NOT NULL, &#10;&#09;ingested_at DATETIME NOT NULL, &#10;&#09;PRIMARY KEY (id)&#10;)&#10;&#10;]&#10;(Background on this error at: https://sqlalche.me/e/20/e3q8)&quot;">self = &lt;sqlalchemy.engine.base.Connection object at 0x128491720&gt;
+dialect = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1284916f0&gt;
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x128493d30&gt;
+statement = &lt;sqlalchemy.dialects.sqlite.base.SQLiteDDLCompiler object at 0x128490640&gt;
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -&gt; CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+&gt;                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1284916f0&gt;
+cursor = &lt;sqlite3.Cursor object at 0x11846edc0&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x128493d30&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: unknown database raw
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.fixture(scope="function")
+    def test_engine():
+        """
+        Configura um banco de dados SQLite em memória para cada teste.
+        """
+        test_engine = create_engine("sqlite:///:memory:")
+
+        with test_engine.connect() as conn:
+            conn.execute(text("PRAGMA foreign_keys = OFF;"))
+            Base.metadata.drop_all(conn)
+&gt;           Base.metadata.create_all(conn)
+
+tests/test_utils_migrations.py:63:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/schema.py:5825: in create_all
+    bind._run_ddl_visitor(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2439: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:918: in visit_metadata
+    self.traverse_single(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:956: in visit_table
+    )._invoke_with(self.connection)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:314: in _invoke_with
+    return bind.execute(self)
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1408: in execute
+    return meth(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:180: in _execute_on_connection
+    return connection._execute_ddl(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1519: in _execute_ddl
+    ret = self._execute_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1839: in _execute_context
+    return self._exec_single_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1979: in _exec_single_context
+    self._handle_dbapi_exception(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1284916f0&gt;
+cursor = &lt;sqlite3.Cursor object at 0x11846edc0&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x128493d30&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw
+E       [SQL:
+E       CREATE TABLE raw.accounts (
+E       	id INTEGER NOT NULL,
+E       	table_name VARCHAR NOT NULL,
+E       	event_uuid VARCHAR NOT NULL,
+E       	event_type VARCHAR NOT NULL,
+E       	event_timestamp DATETIME NOT NULL,
+E       	payload JSON NOT NULL,
+E       	ingested_at DATETIME NOT NULL,
+E       	PRIMARY KEY (id)
+E       )
+E
+E       ]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError</error></testcase><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_add_columns[test_table-&lt;lambda&gt;-&lt;lambda&gt;-expected_alter_statements1]" time="0.005"><error message="failed on setup with &quot;sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw&#10;[SQL: &#10;CREATE TABLE raw.accounts (&#10;&#09;id INTEGER NOT NULL, &#10;&#09;table_name VARCHAR NOT NULL, &#10;&#09;event_uuid VARCHAR NOT NULL, &#10;&#09;event_type VARCHAR NOT NULL, &#10;&#09;event_timestamp DATETIME NOT NULL, &#10;&#09;payload JSON NOT NULL, &#10;&#09;ingested_at DATETIME NOT NULL, &#10;&#09;PRIMARY KEY (id)&#10;)&#10;&#10;]&#10;(Background on this error at: https://sqlalche.me/e/20/e3q8)&quot;">self = &lt;sqlalchemy.engine.base.Connection object at 0x1284185e0&gt;
+dialect = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x128418640&gt;
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x12841a950&gt;
+statement = &lt;sqlalchemy.dialects.sqlite.base.SQLiteDDLCompiler object at 0x128419960&gt;
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -&gt; CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+&gt;                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x128418640&gt;
+cursor = &lt;sqlite3.Cursor object at 0x12808f140&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x12841a950&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: unknown database raw
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.fixture(scope="function")
+    def test_engine():
+        """
+        Configura um banco de dados SQLite em memória para cada teste.
+        """
+        test_engine = create_engine("sqlite:///:memory:")
+
+        with test_engine.connect() as conn:
+            conn.execute(text("PRAGMA foreign_keys = OFF;"))
+            Base.metadata.drop_all(conn)
+&gt;           Base.metadata.create_all(conn)
+
+tests/test_utils_migrations.py:63:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/schema.py:5825: in create_all
+    bind._run_ddl_visitor(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2439: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:918: in visit_metadata
+    self.traverse_single(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:956: in visit_table
+    )._invoke_with(self.connection)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:314: in _invoke_with
+    return bind.execute(self)
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1408: in execute
+    return meth(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:180: in _execute_on_connection
+    return connection._execute_ddl(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1519: in _execute_ddl
+    ret = self._execute_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1839: in _execute_context
+    return self._exec_single_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1979: in _exec_single_context
+    self._handle_dbapi_exception(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x128418640&gt;
+cursor = &lt;sqlite3.Cursor object at 0x12808f140&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x12841a950&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw
+E       [SQL:
+E       CREATE TABLE raw.accounts (
+E       	id INTEGER NOT NULL,
+E       	table_name VARCHAR NOT NULL,
+E       	event_uuid VARCHAR NOT NULL,
+E       	event_type VARCHAR NOT NULL,
+E       	event_timestamp DATETIME NOT NULL,
+E       	payload JSON NOT NULL,
+E       	ingested_at DATETIME NOT NULL,
+E       	PRIMARY KEY (id)
+E       )
+E
+E       ]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError</error></testcase><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_no_missing_columns[existing_table]" time="0.005"><error message="failed on setup with &quot;sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw&#10;[SQL: &#10;CREATE TABLE raw.accounts (&#10;&#09;id INTEGER NOT NULL, &#10;&#09;table_name VARCHAR NOT NULL, &#10;&#09;event_uuid VARCHAR NOT NULL, &#10;&#09;event_type VARCHAR NOT NULL, &#10;&#09;event_timestamp DATETIME NOT NULL, &#10;&#09;payload JSON NOT NULL, &#10;&#09;ingested_at DATETIME NOT NULL, &#10;&#09;PRIMARY KEY (id)&#10;)&#10;&#10;]&#10;(Background on this error at: https://sqlalche.me/e/20/e3q8)&quot;">self = &lt;sqlalchemy.engine.base.Connection object at 0x128271990&gt;
+dialect = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x128271cf0&gt;
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x128273b80&gt;
+statement = &lt;sqlalchemy.dialects.sqlite.base.SQLiteDDLCompiler object at 0x128270190&gt;
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -&gt; CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+&gt;                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x128271cf0&gt;
+cursor = &lt;sqlite3.Cursor object at 0x1299d6cc0&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x128273b80&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: unknown database raw
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.fixture(scope="function")
+    def test_engine():
+        """
+        Configura um banco de dados SQLite em memória para cada teste.
+        """
+        test_engine = create_engine("sqlite:///:memory:")
+
+        with test_engine.connect() as conn:
+            conn.execute(text("PRAGMA foreign_keys = OFF;"))
+            Base.metadata.drop_all(conn)
+&gt;           Base.metadata.create_all(conn)
+
+tests/test_utils_migrations.py:63:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/schema.py:5825: in create_all
+    bind._run_ddl_visitor(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2439: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:918: in visit_metadata
+    self.traverse_single(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:956: in visit_table
+    )._invoke_with(self.connection)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:314: in _invoke_with
+    return bind.execute(self)
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1408: in execute
+    return meth(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:180: in _execute_on_connection
+    return connection._execute_ddl(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1519: in _execute_ddl
+    ret = self._execute_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1839: in _execute_context
+    return self._exec_single_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1979: in _exec_single_context
+    self._handle_dbapi_exception(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x128271cf0&gt;
+cursor = &lt;sqlite3.Cursor object at 0x1299d6cc0&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x128273b80&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw
+E       [SQL:
+E       CREATE TABLE raw.accounts (
+E       	id INTEGER NOT NULL,
+E       	table_name VARCHAR NOT NULL,
+E       	event_uuid VARCHAR NOT NULL,
+E       	event_type VARCHAR NOT NULL,
+E       	event_timestamp DATETIME NOT NULL,
+E       	payload JSON NOT NULL,
+E       	ingested_at DATETIME NOT NULL,
+E       	PRIMARY KEY (id)
+E       )
+E
+E       ]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError</error></testcase><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_no_missing_columns[non_existing_table]" time="0.005"><error message="failed on setup with &quot;sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw&#10;[SQL: &#10;CREATE TABLE raw.accounts (&#10;&#09;id INTEGER NOT NULL, &#10;&#09;table_name VARCHAR NOT NULL, &#10;&#09;event_uuid VARCHAR NOT NULL, &#10;&#09;event_type VARCHAR NOT NULL, &#10;&#09;event_timestamp DATETIME NOT NULL, &#10;&#09;payload JSON NOT NULL, &#10;&#09;ingested_at DATETIME NOT NULL, &#10;&#09;PRIMARY KEY (id)&#10;)&#10;&#10;]&#10;(Background on this error at: https://sqlalche.me/e/20/e3q8)&quot;">self = &lt;sqlalchemy.engine.base.Connection object at 0x1181e15d0&gt;
+dialect = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1181e1420&gt;
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x1181fd000&gt;
+statement = &lt;sqlalchemy.dialects.sqlite.base.SQLiteDDLCompiler object at 0x1181e1cf0&gt;
+parameters = [()]
+
+    def _exec_single_context(
+        self,
+        dialect: Dialect,
+        context: ExecutionContext,
+        statement: Union[str, Compiled],
+        parameters: Optional[_AnyMultiExecuteParams],
+    ) -&gt; CursorResult[Any]:
+        """continue the _execute_context() method for a single DBAPI
+        cursor.execute() or cursor.executemany() call.
+
+        """
+        if dialect.bind_typing is BindTyping.SETINPUTSIZES:
+            generic_setinputsizes = context._prepare_set_input_sizes()
+
+            if generic_setinputsizes:
+                try:
+                    dialect.do_set_input_sizes(
+                        context.cursor, generic_setinputsizes, context
+                    )
+                except BaseException as e:
+                    self._handle_dbapi_exception(
+                        e, str(statement), parameters, None, context
+                    )
+
+        cursor, str_statement, parameters = (
+            context.cursor,
+            context.statement,
+            context.parameters,
+        )
+
+        effective_parameters: Optional[_AnyExecuteParams]
+
+        if not context.executemany:
+            effective_parameters = parameters[0]
+        else:
+            effective_parameters = parameters
+
+        if self._has_events or self.engine._has_events:
+            for fn in self.dispatch.before_cursor_execute:
+                str_statement, effective_parameters = fn(
+                    self,
+                    cursor,
+                    str_statement,
+                    effective_parameters,
+                    context,
+                    context.executemany,
+                )
+
+        if self._echo:
+            self._log_info(str_statement)
+
+            stats = context._get_cache_stats()
+
+            if not self.engine.hide_parameters:
+                self._log_info(
+                    "[%s] %r",
+                    stats,
+                    sql_util._repr_params(
+                        effective_parameters,
+                        batches=10,
+                        ismulti=context.executemany,
+                    ),
+                )
+            else:
+                self._log_info(
+                    "[%s] [SQL parameters hidden due to hide_parameters=True]",
+                    stats,
+                )
+
+        evt_handled: bool = False
+        try:
+            if context.execute_style is ExecuteStyle.EXECUTEMANY:
+                effective_parameters = cast(
+                    "_CoreMultiExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_executemany:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_executemany(
+                        cursor,
+                        str_statement,
+                        effective_parameters,
+                        context,
+                    )
+            elif not effective_parameters and context.no_parameters:
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute_no_params:
+                        if fn(cursor, str_statement, context):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+                    self.dialect.do_execute_no_params(
+                        cursor, str_statement, context
+                    )
+            else:
+                effective_parameters = cast(
+                    "_CoreSingleExecuteParams", effective_parameters
+                )
+                if self.dialect._has_events:
+                    for fn in self.dialect.dispatch.do_execute:
+                        if fn(
+                            cursor,
+                            str_statement,
+                            effective_parameters,
+                            context,
+                        ):
+                            evt_handled = True
+                            break
+                if not evt_handled:
+&gt;                   self.dialect.do_execute(
+                        cursor, str_statement, effective_parameters, context
+                    )
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1181e1420&gt;
+cursor = &lt;sqlite3.Cursor object at 0x1299d79c0&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x1181fd000&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlite3.OperationalError: unknown database raw
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError
+
+The above exception was the direct cause of the following exception:
+
+    @pytest.fixture(scope="function")
+    def test_engine():
+        """
+        Configura um banco de dados SQLite em memória para cada teste.
+        """
+        test_engine = create_engine("sqlite:///:memory:")
+
+        with test_engine.connect() as conn:
+            conn.execute(text("PRAGMA foreign_keys = OFF;"))
+            Base.metadata.drop_all(conn)
+&gt;           Base.metadata.create_all(conn)
+
+tests/test_utils_migrations.py:63:
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/schema.py:5825: in create_all
+    bind._run_ddl_visitor(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2439: in _run_ddl_visitor
+    visitorcallable(self.dialect, self, **kwargs).traverse_single(element)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:918: in visit_metadata
+    self.traverse_single(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/visitors.py:664: in traverse_single
+    return meth(obj, **kw)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:956: in visit_table
+    )._invoke_with(self.connection)
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:314: in _invoke_with
+    return bind.execute(self)
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1408: in execute
+    return meth(
+../venv/lib/python3.10/site-packages/sqlalchemy/sql/ddl.py:180: in _execute_on_connection
+    return connection._execute_ddl(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1519: in _execute_ddl
+    ret = self._execute_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1839: in _execute_context
+    return self._exec_single_context(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1979: in _exec_single_context
+    self._handle_dbapi_exception(
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:2335: in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/base.py:1960: in _exec_single_context
+    self.dialect.do_execute(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x1181e1420&gt;
+cursor = &lt;sqlite3.Cursor object at 0x1299d79c0&gt;
+statement = '\nCREATE TABLE raw.accounts (\n\tid INTEGER NOT NULL, \n\ttable_name VARCHAR NOT NULL, \n\tevent_uuid VARCHAR NOT NUL...timestamp DATETIME NOT NULL, \n\tpayload JSON NOT NULL, \n\tingested_at DATETIME NOT NULL, \n\tPRIMARY KEY (id)\n)\n\n'
+parameters = ()
+context = &lt;sqlalchemy.dialects.sqlite.base.SQLiteExecutionContext object at 0x1181fd000&gt;
+
+    def do_execute(self, cursor, statement, parameters, context=None):
+&gt;       cursor.execute(statement, parameters)
+E       sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) unknown database raw
+E       [SQL:
+E       CREATE TABLE raw.accounts (
+E       	id INTEGER NOT NULL,
+E       	table_name VARCHAR NOT NULL,
+E       	event_uuid VARCHAR NOT NULL,
+E       	event_type VARCHAR NOT NULL,
+E       	event_timestamp DATETIME NOT NULL,
+E       	payload JSON NOT NULL,
+E       	ingested_at DATETIME NOT NULL,
+E       	PRIMARY KEY (id)
+E       )
+E
+E       ]
+E       (Background on this error at: https://sqlalche.me/e/20/e3q8)
+
+../venv/lib/python3.10/site-packages/sqlalchemy/engine/default.py:924: OperationalError</error></testcase></testsuite></testsuites>

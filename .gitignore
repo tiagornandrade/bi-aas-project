@@ -16,3 +16,4 @@ ingestion/.env
 .idea
 .vscode
 workflows/*.xml
+ingestion_dev/.env
