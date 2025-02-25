@@ -12,8 +12,8 @@ ALTER SYSTEM SET track_commit_timestamp = on;
 SELECT pg_reload_conf();
 
 -- Criando o slot de replicação apenas se ele não existir
-DO $$ 
-BEGIN 
+DO $$
+BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_replication_slots WHERE slot_name = 'my_slot') THEN
         PERFORM pg_create_logical_replication_slot('my_slot', 'pgoutput');
     END IF;

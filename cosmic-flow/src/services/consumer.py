@@ -200,7 +200,14 @@ def consume_dlq_events():
                 """
                 cur.execute(
                     sql,
-                    (table_name, event_uuid, event_type, event_timestamp, json.dumps(record), error_message),
+                    (
+                        table_name,
+                        event_uuid,
+                        event_type,
+                        event_timestamp,
+                        json.dumps(record),
+                        error_message,
+                    ),
                 )
                 logging.info(f"✅ Evento inserido na raw.dlq_events: {event}")
 

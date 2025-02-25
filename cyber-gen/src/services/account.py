@@ -59,11 +59,12 @@ class AccountService:
             db.commit()
 
             logger.info(f"{count} subcontas inseridas com sucesso.")
-            return db.query(Subaccount).order_by(Subaccount.id.desc()).limit(count).all()
+            return (
+                db.query(Subaccount).order_by(Subaccount.id.desc()).limit(count).all()
+            )
         except Exception as e:
             db.rollback()
             logger.error(f"Erro ao inserir subcontas: {e}")
             return []
         finally:
             db.close()
-

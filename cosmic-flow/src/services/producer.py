@@ -25,12 +25,14 @@ admin_client = AdminClient(KAFKA_CONFIG)
 
 WAL_PATTERN = re.compile(r"table public\.(\w+): (\w+): (.*)")
 
+
 def create_topics(topics):
     """Cria os tópicos no Kafka se ainda não existirem."""
     existing_topics = admin_client.list_topics(timeout=5).topics.keys()
     new_topics = [
         NewTopic(topic, num_partitions=3, replication_factor=1)
-        for topic in topics if topic not in existing_topics
+        for topic in topics
+        if topic not in existing_topics
     ]
 
     if new_topics:
@@ -46,6 +48,7 @@ def create_topics(topics):
                     print(f"⚠️ Tópico '{topic}' já existe.")
                 else:
                     print(f"❌ Erro ao criar tópico '{topic}': {e}")
+
 
 def delivery_report(err, msg):
     """Callback para confirmar entrega ao Kafka e enviar para DLQ em caso de erro."""
@@ -69,6 +72,7 @@ def delivery_report(err, msg):
             print(f"🚨 Falha ao enviar para DLQ: {dlq_err}")
     else:
         print(f"✅ Mensagem entregue para {msg.topic()} [{msg.partition()}]")
+
 
 def capture_wal_changes():
     """Captura mudanças do WAL e envia para o Kafka"""

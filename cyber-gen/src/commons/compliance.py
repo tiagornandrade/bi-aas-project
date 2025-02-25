@@ -32,7 +32,6 @@ class CompliancesEvents:
             for _ in range(count)
         ]
 
-
     @staticmethod
     def generate_user_verifications(count: int) -> List[Dict]:
         """Gera verificações de usuários como dicionários."""
