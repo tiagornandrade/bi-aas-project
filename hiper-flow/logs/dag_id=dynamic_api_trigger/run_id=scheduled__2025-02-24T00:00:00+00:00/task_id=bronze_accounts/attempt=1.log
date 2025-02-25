@@ -1,0 +1,29 @@
+[2025-02-25T19:45:04.215+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: dynamic_api_trigger.bronze_accounts scheduled__2025-02-24T00:00:00+00:00 [queued]>
+[2025-02-25T19:45:04.219+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: dynamic_api_trigger.bronze_accounts scheduled__2025-02-24T00:00:00+00:00 [queued]>
+[2025-02-25T19:45:04.219+0000] {taskinstance.py:2171} INFO - Starting attempt 1 of 2
+[2025-02-25T19:45:04.229+0000] {taskinstance.py:2192} INFO - Executing <Task(SimpleHttpOperator): bronze_accounts> on 2025-02-24 00:00:00+00:00
+[2025-02-25T19:45:04.232+0000] {standard_task_runner.py:60} INFO - Started process 94 to run task
+[2025-02-25T19:45:04.234+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'dynamic_api_trigger', 'bronze_accounts', 'scheduled__2025-02-24T00:00:00+00:00', '--job-id', '19', '--raw', '--subdir', 'DAGS_FOLDER/dynamic_api_trigger.py', '--cfg-path', '/tmp/tmpwzoffqb3']
+[2025-02-25T19:45:04.234+0000] {standard_task_runner.py:88} INFO - Job 19: Subtask bronze_accounts
+[2025-02-25T19:45:04.264+0000] {task_command.py:423} INFO - Running <TaskInstance: dynamic_api_trigger.bronze_accounts scheduled__2025-02-24T00:00:00+00:00 [running]> on host df64ebc03249
+[2025-02-25T19:45:04.315+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='dynamic_api_trigger' AIRFLOW_CTX_TASK_ID='bronze_accounts' AIRFLOW_CTX_EXECUTION_DATE='2025-02-24T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='1' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-02-24T00:00:00+00:00'
+[2025-02-25T19:45:04.316+0000] {http.py:169} INFO - Calling HTTP method
+[2025-02-25T19:45:04.328+0000] {taskinstance.py:2699} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/http/operators/http.py", line 166, in execute
+    return self.execute_sync(context=context)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/http/operators/http.py", line 170, in execute_sync
+    response = self.hook.run(self.endpoint, self.data, self.headers, self.extra_options)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/http/operators/http.py", line 148, in hook
+    conn = BaseHook.get_connection(conn_id)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/hooks/base.py", line 82, in get_connection
+    conn = Connection.get_connection_from_secrets(conn_id)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/connection.py", line 479, in get_connection_from_secrets
+    raise AirflowNotFoundException(f"The conn_id `{conn_id}` isn't defined")
+airflow.exceptions.AirflowNotFoundException: The conn_id `api_service` isn't defined
+[2025-02-25T19:45:04.330+0000] {taskinstance.py:1138} INFO - Marking task as UP_FOR_RETRY. dag_id=dynamic_api_trigger, task_id=bronze_accounts, execution_date=20250224T000000, start_date=20250225T194504, end_date=20250225T194504
+[2025-02-25T19:45:04.337+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 19 for task bronze_accounts (The conn_id `api_service` isn't defined; 94)
+[2025-02-25T19:45:04.377+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2025-02-25T19:45:04.389+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check
