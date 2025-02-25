@@ -1,2 +1,12 @@
 ###
-POST http://localhost:8080/accounts/load_incremental
+POST http://localhost:8000/accounts_deleted/load_full HTTP/1.1
+Content-Type: application/json
+
+###
+POST http://localhost:8000/accounts_deleted/load_incremental HTTP/1.1
+Content-Type: application/json
+
+
+###
+GET http://localhost:8000/status/accounts_deleted_incremental_20250225T154627 HTTP/1.1
+Content-Type: application/json

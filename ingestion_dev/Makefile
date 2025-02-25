@@ -5,12 +5,6 @@
 PYTHON = python3
 PIP = pip
 VENV_DIR = venv
-COUCHDB_URL = http://admin:password@localhost:5984
-COUCHDB_DBNAME = etl_jobs
-PROJECT_NAME = etl_loader
-FUNCTION_NAME = etl_loader
-GCP_REGION = us-central1
-PORT = 5555
 
 # Inicializar ambiente virtual
 .PHONY: venv
@@ -90,6 +84,9 @@ run-migrations:
 
 run-main:
 	python src/main.py
+
+run-couchdb:
+	http://localhost:5984/_utils/
 
 # Ajuda
 .PHONY: help

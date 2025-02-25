@@ -47,6 +47,22 @@ services:
     networks:
       subnet:
 
+  kafka-connect:
+    image: debezium/connect:2.5
+    restart: always
+    ports:
+      - "8083:8083"
+    depends_on:
+      - kafka
+    environment:
+      BOOTSTRAP_SERVERS: "kafka:9092"
+      GROUP_ID: "debezium-connector"
+      CONFIG_STORAGE_TOPIC: "connect-configs"
+      OFFSET_STORAGE_TOPIC: "connect-offsets"
+      STATUS_STORAGE_TOPIC: "connect-status"
+    networks:
+      - subnet
+
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
