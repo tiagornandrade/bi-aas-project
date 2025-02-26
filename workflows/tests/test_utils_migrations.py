@@ -24,7 +24,7 @@ def test_sync_models_with_db_error_handling(mocker: MockerFixture, test_engine):
     error_message = "Erro simulada na criação de tabelas"
 
     mocker.patch(
-        "src.utils.migrations.Base.metadata.create_all",
+        "utils.migrations.Base.metadata.create_all",
         side_effect=Exception(error_message),
     )
 
@@ -113,7 +113,7 @@ def test_sync_models_with_db_add_columns(
         )
         metadata.create_all(test_engine)
 
-    mocker.patch("src.utils.migrations.engine", test_engine)
+    mocker.patch("utils.migrations.engine", test_engine)
 
     table_definition = Table(
         table_name,
@@ -121,7 +121,7 @@ def test_sync_models_with_db_add_columns(
         *[Column(c.name, c.type, primary_key=c.primary_key) for c in model_columns],
     )
     mocker.patch(
-        "src.utils.migrations.Base.metadata.tables", {table_name: table_definition}
+        "utils.migrations.Base.metadata.tables", {table_name: table_definition}
     )
 
     with test_engine.connect() as conn:
@@ -158,11 +158,11 @@ def test_sync_models_with_db_no_missing_columns(
     )
     metadata.create_all(test_engine)
 
-    mocker.patch("src.utils.migrations.engine", test_engine)
+    mocker.patch("utils.migrations.engine", test_engine)
 
     table_definition = Table(table_name, MetaData(), *model_columns)
     mocker.patch(
-        "src.utils.migrations.Base.metadata.tables", {table_name: table_definition}
+        "utils.migrations.Base.metadata.tables", {table_name: table_definition}
     )
 
     with test_engine.connect() as conn:

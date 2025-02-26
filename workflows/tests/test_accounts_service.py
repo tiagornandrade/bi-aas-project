@@ -52,7 +52,7 @@ def test_insert_users_happy_path(test_db, count):
 
 def test_insert_users_rollback(test_db, mocker):
     mock_db = mocker.patch(
-        "src.services.account.SessionLocal", autospec=True
+        "services.account.SessionLocal", autospec=True
     ).return_value
     mock_db.commit.side_effect = Exception("Mock DB error")
 
@@ -80,7 +80,7 @@ def test_insert_accounts_happy_path(test_db, count):
 
 def test_insert_accounts_rollback(test_db, mocker):
     mock_db = mocker.patch(
-        "src.services.account.SessionLocal", autospec=True
+        "services.account.SessionLocal", autospec=True
     ).return_value
     mock_db.commit.side_effect = Exception("Mock DB error")
     AccountService.insert_users(5)
@@ -109,7 +109,7 @@ def test_insert_subaccounts_happy_path(test_db, count):
 
 def test_insert_subaccounts_rollback(test_db, mocker):
     mock_db = mocker.patch(
-        "src.services.account.SessionLocal", autospec=True
+        "services.account.SessionLocal", autospec=True
     ).return_value
     mock_db.commit.side_effect = Exception("Mock DB error")
     AccountService.insert_users(5)
