@@ -1,7 +1,7 @@
 import logging
-from utils.db import SessionLocal
-from models.payment import Transaction, PaymentMethod, Merchant
-from commons.payments import PaymentsEvents
+from src.utils.db import SessionLocal
+from src.models.payment import Transaction, PaymentMethod, Merchant
+from src.commons.payments import PaymentsEvents
 
 logger = logging.getLogger(__name__)
 

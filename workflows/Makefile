@@ -37,7 +37,7 @@ run:
 .PHONY: test
 test:
 	@echo "🧪 Executando testes..."
-	pytest -vv  --junitxml=test-results-database.xml
+	SQLALCHEMY_SILENCE_UBER_WARNING=1 pytest -vv
 
 # Criar e configurar o banco CouchDB
 .PHONY: setup-couchdb

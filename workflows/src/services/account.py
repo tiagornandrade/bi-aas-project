@@ -1,69 +1,54 @@
 import logging
-from utils.db import SessionLocal
-from models.account import Account, Subaccount, User
-from commons.accounts import AccountEvents
+from src.utils.db import SessionLocal
+from src.models.account import Account, Subaccount, User
+from src.commons.accounts import AccountEvents
 
 logger = logging.getLogger(__name__)
 
 
 class AccountService:
     @staticmethod
-    def insert_users(count: int, batch_size: int = 100):
-        """Insere usuários no banco de dados em lotes menores"""
-        db = SessionLocal()
+    def insert_users(count, db=None):
+        db = db or SessionLocal()
         try:
-            user_dicts = AccountEvents.generate_users(count)
-            users = [User(**txn_dict) for txn_dict in user_dicts]
-
-            db.bulk_save_objects(users)
+            users_dicts = AccountEvents.generate_users(count)
+            users = [User(**users_dict) for users_dict in users_dicts]
+            db.add_all(users)
             db.commit()
-
-            logging.info(f"{count} usuários inseridos com sucesso.")
-            return db.query(User).order_by(User.id.desc()).limit(count).all()
+            return users
         except Exception as e:
             db.rollback()
-            logging.error(f"Erro ao inserir usuários: {e}")
+            print(f"Erro ao inserir usuários: {e}")
             return []
-        finally:
-            db.close()
 
     @staticmethod
-    def insert_accounts(count: int):
+    def insert_accounts(count, db=None):
         """Insere contas no banco de dados."""
-        db = SessionLocal()
+        db = db or SessionLocal()
         try:
-            accounts_dicts = AccountEvents.generate_accounts(count)
-            accounts = [Account(**acc_dict) for acc_dict in accounts_dicts]
-
-            db.bulk_save_objects(accounts)
+            account_dicts = AccountEvents.generate_accounts(count)
+            accounts = [Account(**account_dict) for account_dict in account_dicts]
+            db.add_all(accounts)
             db.commit()
-
-            logger.info(f"{count} contas inseridas com sucesso.")
-            return db.query(Account).order_by(Account.id.desc()).limit(count).all()
+            return accounts
         except Exception as e:
             db.rollback()
             logger.error(f"Erro ao inserir contas: {e}")
             return []
-        finally:
-            db.close()
 
     @staticmethod
-    def insert_subaccounts(count: int):
+    def insert_subaccounts(count, db=None):
         """Insere subcontas no banco de dados."""
-        db = SessionLocal()
+        db = db or SessionLocal()
         try:
-            subaccounts_dicts = AccountEvents.generate_subaccounts(count)
-            subaccounts = [Subaccount(**sub_dict) for sub_dict in subaccounts_dicts]
-
-            db.bulk_save_objects(subaccounts)
+            subaccount_dicts = AccountEvents.generate_subaccounts(count)
+            subaccounts = [
+                Subaccount(**subaccount_dict) for subaccount_dict in subaccount_dicts
+            ]
+            db.add_all(subaccounts)
             db.commit()
-
-            logger.info(f"{count} subcontas inseridas com sucesso.")
-            return db.query(Subaccount).order_by(Subaccount.id.desc()).limit(count).all()
+            return subaccounts
         except Exception as e:
             db.rollback()
             logger.error(f"Erro ao inserir subcontas: {e}")
             return []
-        finally:
-            db.close()
-

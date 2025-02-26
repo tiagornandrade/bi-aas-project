@@ -1,7 +1,7 @@
 import logging
-from utils.db import SessionLocal
-from models.entities import Entity
-from commons.entities import EntityEvents
+from src.utils.db import SessionLocal
+from src.models.entities import Entity
+from src.commons.entities import EntityEvents
 
 logger = logging.getLogger(__name__)
 

@@ -58,7 +58,6 @@ def sync_models_with_db():
 
                                 try:
                                     conn.execute(text(alter_stmt))
-                                    conn.commit()
                                     print(
                                         f"✅ Coluna '{column_name}' adicionada na tabela '{table_name}' como '{column_type_pg}'."
                                     )
