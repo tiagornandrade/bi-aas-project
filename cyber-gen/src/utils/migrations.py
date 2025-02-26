@@ -1,88 +1,89 @@
-from src.models.account import Base
-from src.models.audit import Base
-from src.models.compliance import Base
-from src.models.credit import Base
-from src.models.entities import Base
-from src.models.insurance import Base
-from src.models.investments import Base
-from src.models.lending import Base
-from src.models.payment import Base
-from src.utils.db import engine, Base
-from sqlalchemy import MetaData, text
-from sqlalchemy.exc import SQLAlchemyError
+import os
+from sqlalchemy import (
+    create_engine,
+    Column,
+    String,
+    Integer,
+    DateTime,
+    JSON,
+    TIMESTAMP,
+    Text,
+)
+from sqlalchemy.orm import sessionmaker, declarative_base
+from dotenv import load_dotenv
+from datetime import datetime
+
+load_dotenv()
+
+DATABASE_URL = os.getenv("DB_URL", "sqlite:///./test.db")
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
+
+tables = [
+    "accounts",
+    "audits",
+    "claims",
+    "credit_scores",
+    "entities",
+    "insured_entities",
+    "loans",
+    "merchants",
+    "payment_methods",
+    "payments",
+    "policies",
+    "portfolios",
+    "regulations",
+    "risk_assessments",
+    "subaccounts",
+    "transactions",
+    "user_verifications",
+    "users",
+]
 
 
-SQLALCHEMY_TO_POSTGRESQL = {
-    "INTEGER": "INTEGER",
-    "BIGINT": "BIGINT",
-    "VARCHAR": "VARCHAR",
-    "TEXT": "TEXT",
-    "BOOLEAN": "BOOLEAN",
-    "DECIMAL": "DECIMAL",
-    "FLOAT": "DOUBLE PRECISION",
-    "NUMERIC": "NUMERIC",
-    "DATETIME": "TIMESTAMP",
-    "DATE": "DATE",
-    "TIME": "TIME",
-}
+class AuditLogChanges(Base):
+    __tablename__ = "changes"
+    __table_args__ = {"schema": "audit_log"}
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    table_name = Column(String)
+    change_type = Column(String)
+    record = Column(JSON)
+    captured_at = Column(TIMESTAMP, default=datetime.utcnow)
 
 
-def sync_models_with_db():
-    """
-    Sincroniza os modelos SQLAlchemy com o banco de dados, adicionando colunas ausentes quando necessário.
-    """
-    Base.metadata.create_all(engine)
-    metadata = MetaData()
+for table_name in tables:
+    class_attrs = {
+        "__tablename__": table_name,
+        "__table_args__": {"schema": "raw"},
+        "id": Column(Integer, primary_key=True, autoincrement=True),
+        "table_name": Column(String, nullable=False),
+        "event_uuid": Column(String, nullable=False),
+        "event_type": Column(String, nullable=False),
+        "event_timestamp": Column(TIMESTAMP, nullable=False),
+        "payload": Column(JSON, nullable=False),
+        "ingested_at": Column(TIMESTAMP, default=datetime.utcnow, nullable=False),
+    }
 
-    try:
-        metadata.reflect(bind=engine)
-
-        with engine.connect() as conn:
-            with conn.begin():
-                for table_name, model_table in Base.metadata.tables.items():
-                    if table_name in metadata.tables:
-                        db_table = metadata.tables[table_name]
-
-                        for column in model_table.columns:
-                            column_name = column.name
-
-                            if column_name not in db_table.c:
-                                column_type = str(column.type).upper()
-                                column_type_pg = SQLALCHEMY_TO_POSTGRESQL.get(
-                                    column_type, column_type
-                                )
-
-                                alter_stmt = f"ALTER TABLE {table_name} ADD COLUMN {column_name} {column_type_pg}"
-                                if column_type_pg == "TIMESTAMP":
-                                    alter_stmt += " DEFAULT NOW()"
-
-                                try:
-                                    conn.execute(text(alter_stmt))
-                                    conn.commit()
-                                    print(
-                                        f"✅ Coluna '{column_name}' adicionada na tabela '{table_name}' como '{column_type_pg}'."
-                                    )
-                                except SQLAlchemyError as e:
-                                    print(
-                                        f"❌ Erro ao adicionar a coluna '{column_name}' na tabela '{table_name}': {e}"
-                                    )
-                print(
-                    f"⚠️ Tabela '{table_name}' não existe no banco. Criando com SQLAlchemy..."
-                )
-
-    except SQLAlchemyError as e:
-        print(f"❌ Erro ao sincronizar modelos com o banco: {e}")
+    table_class = type(table_name.capitalize(), (Base,), class_attrs)
+    globals()[table_name.capitalize()] = table_class
 
 
-if __name__ == "__main__":
-    print("🔄 Criando tabelas no banco de dados...")
-    try:
-        Base.metadata.create_all(bind=engine)
-        print("✅ Tabelas criadas com sucesso!")
+class DlqEvents(Base):
+    __tablename__ = "dlq_events"
+    __table_args__ = {"schema": "raw"}
 
-        print("\n🔄 Sincronizando colunas do modelo com o banco de dados...")
-        sync_models_with_db()
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    table_name = Column(String, nullable=False)
+    event_uuid = Column(String, nullable=False)
+    event_type = Column(String, nullable=False)
+    event_timestamp = Column(TIMESTAMP, nullable=False)
+    payload = Column(JSON, nullable=False)
+    ingested_at = Column(TIMESTAMP, default=datetime.utcnow, nullable=False)
+    error_message = Column(Text)
 
-        print("✅ Atualização das tabelas concluída!")
-    except SQLAlchemyError as e:
-        print(f"❌ Erro ao criar tabelas: {e}")
+
+Base.metadata.create_all(engine)
+
+print("Tabelas criadas com sucesso!")

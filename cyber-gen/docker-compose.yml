@@ -51,6 +51,21 @@ services:
     networks:
       - etl_network
 
+  api:
+    build: .
+    container_name: api_service
+    restart: always
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgresql-primary
+      - couchdb
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgresql-primary:5432/postgres
+      COUCHDB_URL: http://admin:password@couchdb:5984/
+    networks:
+      - etl_network
+
 volumes:
   postgresql_master_data:
   postgresql_replica_data:

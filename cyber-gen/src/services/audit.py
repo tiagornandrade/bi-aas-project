@@ -19,7 +19,7 @@ class AuditService:
             db.commit()
 
             inserted_audits = (
-                db.query(Audit).order_by(Audit.audit_id.desc()).limit(count).all()
+                db.query(Audit).order_by(Audit.id.desc()).limit(count).all()
             )
             logging.info(f"{count} auditorias inseridas com sucesso.")
             return inserted_audits

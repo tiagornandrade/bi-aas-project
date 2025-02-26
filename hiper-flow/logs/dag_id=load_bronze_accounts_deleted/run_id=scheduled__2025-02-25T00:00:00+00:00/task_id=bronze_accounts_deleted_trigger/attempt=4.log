@@ -1,0 +1,37 @@
+[2025-02-26T14:53:06.141+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=non-requeueable deps ti=<TaskInstance: load_bronze_accounts_deleted.bronze_accounts_deleted_trigger scheduled__2025-02-25T00:00:00+00:00 [queued]>
+[2025-02-26T14:53:06.145+0000] {taskinstance.py:1957} INFO - Dependencies all met for dep_context=requeueable deps ti=<TaskInstance: load_bronze_accounts_deleted.bronze_accounts_deleted_trigger scheduled__2025-02-25T00:00:00+00:00 [queued]>
+[2025-02-26T14:53:06.145+0000] {taskinstance.py:2171} INFO - Starting attempt 4 of 5
+[2025-02-26T14:53:06.153+0000] {taskinstance.py:2192} INFO - Executing <Task(SimpleHttpOperator): bronze_accounts_deleted_trigger> on 2025-02-25 00:00:00+00:00
+[2025-02-26T14:53:06.155+0000] {standard_task_runner.py:60} INFO - Started process 100 to run task
+[2025-02-26T14:53:06.156+0000] {standard_task_runner.py:87} INFO - Running: ['***', 'tasks', 'run', 'load_bronze_accounts_deleted', 'bronze_accounts_deleted_trigger', 'scheduled__2025-02-25T00:00:00+00:00', '--job-id', '37', '--raw', '--subdir', 'DAGS_FOLDER/dynamic_api_trigger.py', '--cfg-path', '/tmp/tmpozmms8tl']
+[2025-02-26T14:53:06.157+0000] {standard_task_runner.py:88} INFO - Job 37: Subtask bronze_accounts_deleted_trigger
+[2025-02-26T14:53:06.179+0000] {task_command.py:423} INFO - Running <TaskInstance: load_bronze_accounts_deleted.bronze_accounts_deleted_trigger scheduled__2025-02-25T00:00:00+00:00 [running]> on host 6746a23eb18f
+[2025-02-26T14:53:06.213+0000] {taskinstance.py:2481} INFO - Exporting env vars: AIRFLOW_CTX_DAG_OWNER='***' AIRFLOW_CTX_DAG_ID='load_bronze_accounts_deleted' AIRFLOW_CTX_TASK_ID='bronze_accounts_deleted_trigger' AIRFLOW_CTX_EXECUTION_DATE='2025-02-25T00:00:00+00:00' AIRFLOW_CTX_TRY_NUMBER='4' AIRFLOW_CTX_DAG_RUN_ID='scheduled__2025-02-25T00:00:00+00:00'
+[2025-02-26T14:53:06.213+0000] {http.py:169} INFO - Calling HTTP method
+[2025-02-26T14:53:06.217+0000] {base.py:83} INFO - Using connection ID 'api_service' for task execution.
+[2025-02-26T14:53:06.219+0000] {base.py:83} INFO - Using connection ID 'api_service' for task execution.
+[2025-02-26T14:53:06.220+0000] {taskinstance.py:2699} ERROR - Task failed with exception
+Traceback (most recent call last):
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/models/taskinstance.py", line 433, in _execute_task
+    result = execute_callable(context=context, **execute_callable_kwargs)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/http/operators/http.py", line 166, in execute
+    return self.execute_sync(context=context)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/http/operators/http.py", line 170, in execute_sync
+    response = self.hook.run(self.endpoint, self.data, self.headers, self.extra_options)
+  File "/home/airflow/.local/lib/python3.8/site-packages/airflow/providers/http/hooks/http.py", line 164, in run
+    prepped_request = session.prepare_request(req)
+  File "/home/airflow/.local/lib/python3.8/site-packages/requests/sessions.py", line 486, in prepare_request
+    p.prepare(
+  File "/home/airflow/.local/lib/python3.8/site-packages/requests/models.py", line 369, in prepare
+    self.prepare_headers(headers)
+  File "/home/airflow/.local/lib/python3.8/site-packages/requests/models.py", line 491, in prepare_headers
+    check_header_validity(header)
+  File "/home/airflow/.local/lib/python3.8/site-packages/requests/utils.py", line 1040, in check_header_validity
+    _validate_header_part(header, value, 1)
+  File "/home/airflow/.local/lib/python3.8/site-packages/requests/utils.py", line 1049, in _validate_header_part
+    raise InvalidHeader(
+requests.exceptions.InvalidHeader: Header part ({'Content-Type': 'application/json'}) from ('headers', {'Content-Type': 'application/json'}) must be of type str or bytes, not <class 'dict'>
+[2025-02-26T14:53:06.223+0000] {taskinstance.py:1138} INFO - Marking task as UP_FOR_RETRY. dag_id=load_bronze_accounts_deleted, task_id=bronze_accounts_deleted_trigger, execution_date=20250225T000000, start_date=20250226T145306, end_date=20250226T145306
+[2025-02-26T14:53:06.234+0000] {standard_task_runner.py:107} ERROR - Failed to execute job 37 for task bronze_accounts_deleted_trigger (Header part ({'Content-Type': 'application/json'}) from ('headers', {'Content-Type': 'application/json'}) must be of type str or bytes, not <class 'dict'>; 100)
+[2025-02-26T14:53:06.259+0000] {local_task_job_runner.py:234} INFO - Task exited with return code 1
+[2025-02-26T14:53:06.267+0000] {taskinstance.py:3281} INFO - 0 downstream tasks scheduled from follow-on schedule check

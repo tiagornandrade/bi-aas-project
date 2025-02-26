@@ -19,7 +19,7 @@ def check_api_response(response):
 
 
 def create_dag(layer: str, table: str, layer_params: dict, default_args: dict) -> DAG:
-    """Cria uma DAG para carregar dados de uma tabela específica em uma camada."""
+    """Cria uma DAG para executar a API de carga de dados para uma tabela específica."""
 
     dag_id = f"load_{layer}_{table}"
     schedule_interval = layer_params.get("schedule_interval", "@daily")
@@ -34,9 +34,9 @@ def create_dag(layer: str, table: str, layer_params: dict, default_args: dict) -
     ) as dag:
 
         SimpleHttpOperator(
-            task_id=f"{layer}_{table}_task",
-            http_conn_id="api_service",
-            endpoint=f"/{layer}/{table}",
+            task_id=f"{layer}_{table}_trigger",
+            http_conn_id="api-etl",
+            endpoint=f"http://0.0.0.0:8000/{layer}/{table}/execute",
             method="POST",
             headers={"Content-Type": "application/json"},
             data="{}",
