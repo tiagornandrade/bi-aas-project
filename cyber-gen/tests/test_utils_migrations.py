@@ -1,3 +1,4 @@
+import os
 import pytest
 from pytest_mock import MockerFixture
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
@@ -5,6 +6,11 @@ from src.utils.migrations import sync_models_with_db
 from src.utils.db import Base
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
+
+
+DB_URL = os.getenv("TEST_DB_URL", "sqlite:///:memory:")
+is_sqlite = "sqlite" in DB_URL
+engine = create_engine(DB_URL, echo=True)
 
 
 @pytest.fixture
@@ -24,7 +30,7 @@ def test_sync_models_with_db_error_handling(mocker: MockerFixture, test_engine):
     error_message = "Erro simulada na criação de tabelas"
 
     mocker.patch(
-        "src.utils.migrations.Base.metadata.create_all",
+        "src.utils.migrations.sync_models_with_db",
         side_effect=Exception(error_message),
     )
 
@@ -53,14 +59,16 @@ def drop_existing_indexes(engine):
 @pytest.fixture(scope="function")
 def test_engine():
     """
-    Configura um banco de dados SQLite em memória para cada teste.
+    Configura um banco de dados para testes baseado na variável de ambiente.
     """
-    test_engine = create_engine("sqlite:///:memory:")
+    DB_URL = os.getenv("TEST_DB_URL", "sqlite:///:memory:")
+    test_engine = create_engine(DB_URL, echo=True)
 
     with test_engine.connect() as conn:
-        conn.execute(text("PRAGMA foreign_keys = OFF;"))
-        Base.metadata.drop_all(conn)
-        Base.metadata.create_all(conn)
+        if "sqlite" in DB_URL:
+            conn.execute(text("PRAGMA foreign_keys = OFF;"))
+
+    sync_models_with_db(test_engine)
 
     yield test_engine
 
@@ -99,6 +107,17 @@ def test_sync_models_with_db_add_columns(
     """
     Testa se colunas ausentes são adicionadas corretamente ao banco de dados.
     """
+
+    engine = engine or create_engine(DB_URL)
+
+    if is_sqlite:
+        metadata = Base.metadata
+        for table in metadata.tables.values():
+            table.schema = None
+        metadata.create_all(engine)
+    else:
+        Base.metadata.create_all(engine)
+
     metadata = MetaData()
     model_columns = model_columns()
     existing_columns = existing_columns()

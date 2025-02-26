@@ -31,7 +31,7 @@ run:
 .PHONY: test
 test:
 	@echo "🧪 Executando testes..."
-	@$(VENV_DIR)/bin/pytest tests/
+	pytest -vv  --junitxml=test-results-database.xml
 
 # Criar e configurar o banco CouchDB
 .PHONY: setup-couchdb

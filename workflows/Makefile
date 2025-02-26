@@ -37,7 +37,8 @@ run:
 .PHONY: test
 test:
 	@echo "🧪 Executando testes..."
-	@$(VENV_DIR)/bin/pytest tests/
+	export PYTHONPATH="${PYTHONPATH}:$(pwd)/workflows/src" && \
+	SQLALCHEMY_SILENCE_UBER_WARNING=1 pytest -vv
 
 # Criar e configurar o banco CouchDB
 .PHONY: setup-couchdb

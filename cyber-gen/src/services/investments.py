@@ -1,7 +1,7 @@
 import logging
-from utils.db import SessionLocal
-from models.investments import Portfolio
-from commons.investments import InvestmentsEvents
+from src.utils.db import SessionLocal
+from src.models.investments import Portfolio
+from src.commons.investments import InvestmentsEvents
 
 logger = logging.getLogger(__name__)
 

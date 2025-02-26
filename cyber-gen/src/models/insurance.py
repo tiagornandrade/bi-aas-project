@@ -1,11 +1,19 @@
+import os
 from sqlalchemy import Column, String, Integer, DateTime, JSON
+from sqlalchemy.ext.declarative import declarative_base
 from src.utils.db import Base
 from datetime import datetime
 
 
+Base = declarative_base()
+
+DB_URL = os.getenv("TEST_DB_URL", "sqlite:///:memory:")
+is_sqlite = "sqlite" in DB_URL
+
+
 class Policy(Base):
     __tablename__ = "policies"
-    __table_args__ = {"schema": "raw", "extend_existing": True}
+    __table_args__ = {} if is_sqlite else {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String, nullable=False)
@@ -18,7 +26,7 @@ class Policy(Base):
 
 class Claim(Base):
     __tablename__ = "claims"
-    __table_args__ = {"schema": "raw", "extend_existing": True}
+    __table_args__ = {} if is_sqlite else {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String, nullable=False)
@@ -31,7 +39,7 @@ class Claim(Base):
 
 class InsuredEntity(Base):
     __tablename__ = "insured_entities"
-    __table_args__ = {"schema": "raw", "extend_existing": True}
+    __table_args__ = {} if is_sqlite else {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String, nullable=False)
