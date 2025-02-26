@@ -28,7 +28,7 @@ jobs:
       run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
     - name: Run tests in root with report
-      run: pytest tests/ --junitxml=test-results-root.xml  # Gera relatório em XML
+      run: pytest tests/ --junitxml=test-results-root.xml
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
@@ -43,8 +43,8 @@ jobs:
         echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY
 
 
-  test-database:
-    name: Run tests in database directory
+  test-cyber-gen:
+    name: Run tests in cyber-gen directory
     runs-on: ubuntu-latest
 
     steps:
@@ -59,19 +59,19 @@ jobs:
       run: pip install -r requirements.txt
 
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)/database/src" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=$(pwd)/cyber-gen/src" >> $GITHUB_ENV
 
-    - name: Run tests in database/
-      run: cd database && make test
+    - name: Run tests in cyber-gen/
+      run: cd cyber-gen && make test
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-database
-        path: database/test-results-database.xml
+        name: test-results-cyber-gen
+        path: cyber-gen/test-results-cyber-gen.xml
 
     - name: Display test results summary
       if: always()
       run: |
-        echo "### Test Results for Database" >> $GITHUB_STEP_SUMMARY
+        echo "### Test Results for cyber-gen" >> $GITHUB_STEP_SUMMARY
         echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY

@@ -6,18 +6,21 @@ from datetime import datetime, timedelta
 
 CONFIG_PATH = "/opt/airflow/dags/dags_config.yaml"
 
+
 def load_config(path: str) -> dict:
     """Carrega o arquivo de configuração YAML."""
-    with open(path, "r") as file:
+    with open(path) as file:
         return yaml.safe_load(file)
+
 
 def check_api_response(response):
     """Verifica se a resposta da API tem status 200."""
     return response.status_code == 200
 
+
 def create_dag(layer: str, table: str, layer_params: dict, default_args: dict) -> DAG:
     """Cria uma DAG para carregar dados de uma tabela específica em uma camada."""
-    
+
     dag_id = f"load_{layer}_{table}"
     schedule_interval = layer_params.get("schedule_interval", "@daily")
     catchup = layer_params.get("catchup", False)
@@ -29,7 +32,7 @@ def create_dag(layer: str, table: str, layer_params: dict, default_args: dict) -
         catchup=catchup,
         tags=[layer, table],
     ) as dag:
-        
+
         SimpleHttpOperator(
             task_id=f"{layer}_{table}_task",
             http_conn_id="api_service",
@@ -42,6 +45,7 @@ def create_dag(layer: str, table: str, layer_params: dict, default_args: dict) -
         )
 
     return dag
+
 
 config = load_config(CONFIG_PATH)
 default_args = config.get("default_args", {})
