@@ -1,5 +1,5 @@
 from sqlalchemy import Column, String, Integer, DateTime, Float
-from src.utils.db import Base
+from utils.db import Base
 from datetime import datetime
 
 
