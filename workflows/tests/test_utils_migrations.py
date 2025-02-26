@@ -103,6 +103,7 @@ def test_sync_models_with_db_add_columns(
     model_columns = model_columns()
     existing_columns = existing_columns()
 
+    # sourcery skip: no-conditionals-in-tests
     if not existing_columns:
         db_table = Table(table_name, metadata, *model_columns)
         metadata.create_all(test_engine)
@@ -131,6 +132,7 @@ def test_sync_models_with_db_add_columns(
         result = conn.execute(text(f"PRAGMA table_info('{table_name}')"))
         existing_columns = {row[1] for row in result.fetchall()}
 
+        # sourcery skip: no-loop-in-tests
         for stmt in expected_alter_statements:
             column_name = stmt.split(" ADD COLUMN ")[1].split(" ")[0]
             assert column_name in existing_columns

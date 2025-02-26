@@ -25,7 +25,7 @@ install: venv
 .PHONY: run
 run:
 	@echo "🚀 Iniciando FastAPI na porta $(PORT)..."
-	PYTHONPATH=$(pwd)/src uvicorn src.function-api:app --host 0.0.0.0 --port $(PORT) --reload
+	fastapi dev src/function-api.py
 
 # Rodar testes
 .PHONY: test

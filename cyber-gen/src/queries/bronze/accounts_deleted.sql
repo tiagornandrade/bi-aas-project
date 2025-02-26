@@ -10,7 +10,7 @@ INSERT INTO bronze.accounts_deleted (
     account_type
 )
 SELECT
-    event_uuid,
+    event_uuid::UUID,
     event_timestamp,
     ingested_at AS processed_at,
     (payload ->> 'balance')::NUMERIC AS balance,
