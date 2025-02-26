@@ -56,7 +56,7 @@ jobs:
         python-version: '3.12'
 
     - name: Install dependencies
-      run: pip install -r requirements.txt
+      run: cd workflows && pip install -r requirements.txt
 
     - name: Set PYTHONPATH
       run: echo "PYTHONPATH=$(pwd)/workflows/src" >> $GITHUB_ENV
