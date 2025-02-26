@@ -1,7 +1,7 @@
 import logging
-from src.utils.db import SessionLocal
-from src.models.account import Account, Subaccount, User
-from src.commons.accounts import AccountEvents
+from utils.db import SessionLocal
+from models.account import Account, Subaccount, User
+from commons.accounts import AccountEvents
 
 logger = logging.getLogger(__name__)
 

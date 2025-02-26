@@ -1,7 +1,7 @@
 import logging
-from src.utils.db import SessionLocal
-from src.models.credit import CreditScore, RiskAssessment
-from src.commons.credit import CreditsEvents
+from utils.db import SessionLocal
+from models.credit import CreditScore, RiskAssessment
+from commons.credit import CreditsEvents
 
 logger = logging.getLogger(__name__)
 

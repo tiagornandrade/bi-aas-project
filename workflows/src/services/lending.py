@@ -1,7 +1,7 @@
 import logging
-from src.utils.db import SessionLocal
-from src.models.lending import Loan, Payment
-from src.commons.lending import LendingEvents
+from utils.db import SessionLocal
+from models.lending import Loan, Payment
+from commons.lending import LendingEvents
 
 logger = logging.getLogger(__name__)
 

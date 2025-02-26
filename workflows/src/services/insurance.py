@@ -1,7 +1,7 @@
 import logging
-from src.utils.db import SessionLocal
-from src.models.insurance import Policy, Claim, InsuredEntity
-from src.commons.insurance import InsuranceEvents
+from utils.db import SessionLocal
+from models.insurance import Policy, Claim, InsuredEntity
+from commons.insurance import InsuranceEvents
 
 logger = logging.getLogger(__name__)
 
