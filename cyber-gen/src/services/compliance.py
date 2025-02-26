@@ -1,7 +1,7 @@
 import logging
-from utils.db import SessionLocal
-from models.compliance import Regulation, UserVerification
-from commons.compliance import CompliancesEvents
+from src.utils.db import SessionLocal
+from src.models.compliance import Regulation, UserVerification
+from src.commons.compliance import CompliancesEvents
 
 logger = logging.getLogger(__name__)
 

@@ -43,8 +43,8 @@ jobs:
         echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY
 
 
-  test-cyber-gen:
-    name: Run tests in cyber-gen directory
+  test-workflows:
+    name: Run tests in workflows directory
     runs-on: ubuntu-latest
 
     steps:
@@ -59,19 +59,19 @@ jobs:
       run: pip install -r requirements.txt
 
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)/cyber-gen/src" >> $GITHUB_ENV
+      run: echo "PYTHONPATH=$(pwd)/workflows/src" >> $GITHUB_ENV
 
-    - name: Run tests in cyber-gen/
-      run: cd cyber-gen && make test
+    - name: Run tests in workflows/
+      run: cd workflows && make test
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-cyber-gen
-        path: cyber-gen/test-results-cyber-gen.xml
+        name: test-results-workflows
+        path: workflows/test-results-workflows.xml
 
     - name: Display test results summary
       if: always()
       run: |
-        echo "### Test Results for cyber-gen" >> $GITHUB_STEP_SUMMARY
+        echo "### Test Results for workflows" >> $GITHUB_STEP_SUMMARY
         echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY

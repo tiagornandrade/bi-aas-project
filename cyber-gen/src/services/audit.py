@@ -1,7 +1,7 @@
 import logging
-from utils.db import SessionLocal
-from models.audit import Audit
-from commons.audits import AuditsEvents
+from src.utils.db import SessionLocal
+from src.models.audit import Audit
+from src.commons.audits import AuditsEvents
 
 logger = logging.getLogger(__name__)
 

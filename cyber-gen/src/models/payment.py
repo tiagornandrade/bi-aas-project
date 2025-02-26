@@ -1,11 +1,19 @@
+import os
 from sqlalchemy import Column, String, Integer, DateTime, JSON
+from sqlalchemy.ext.declarative import declarative_base
 from src.utils.db import Base
 from datetime import datetime
 
 
+Base = declarative_base()
+
+DB_URL = os.getenv("TEST_DB_URL", "sqlite:///:memory:")
+is_sqlite = "sqlite" in DB_URL
+
+
 class Transaction(Base):
     __tablename__ = "transactions"
-    __table_args__ = {"schema": "raw", "extend_existing": True}
+    __table_args__ = {} if is_sqlite else {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String, nullable=False)
@@ -18,7 +26,7 @@ class Transaction(Base):
 
 class PaymentMethod(Base):
     __tablename__ = "payment_methods"
-    __table_args__ = {"schema": "raw", "extend_existing": True}
+    __table_args__ = {} if is_sqlite else {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String, nullable=False)
@@ -31,7 +39,7 @@ class PaymentMethod(Base):
 
 class Merchant(Base):
     __tablename__ = "merchants"
-    __table_args__ = {"schema": "raw", "extend_existing": True}
+    __table_args__ = {} if is_sqlite else {"schema": "raw", "extend_existing": True}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     table_name = Column(String, nullable=False)
