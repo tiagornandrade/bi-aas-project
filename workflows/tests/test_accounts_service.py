@@ -1,11 +1,11 @@
 import pytest
 from unittest.mock import patch, Mock
-from src.services.account import AccountService
-from src.commons.accounts import AccountEvents
-from src.models.account import Account, Subaccount, User
+from services.account import AccountService
+from commons.accounts import AccountEvents
+from models.account import Account, Subaccount, User
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from src.utils.db import SessionLocal, Base, engine
+from utils.db import SessionLocal, Base, engine
 
 
 @pytest.fixture(scope="function")

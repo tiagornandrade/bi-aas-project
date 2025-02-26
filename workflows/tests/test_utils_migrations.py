@@ -1,8 +1,8 @@
 import pytest
 from pytest_mock import MockerFixture
 from sqlalchemy import create_engine, MetaData, Table, Column, Integer, String
-from src.utils.migrations import sync_models_with_db
-from src.utils.db import Base
+from utils.migrations import sync_models_with_db
+from utils.db import Base
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
