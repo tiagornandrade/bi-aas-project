@@ -12,6 +12,7 @@ fastapi[standard]
 uvicorn
 couchdb
 dotenv
+Faker
 
 # Ferramentas de testes
 pytest==8.0.2
