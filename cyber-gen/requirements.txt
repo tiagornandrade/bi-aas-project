@@ -11,3 +11,4 @@ pyyaml==6.0.1
 fastapi[standard]
 uvicorn
 couchdb
+google-cloud-datastore

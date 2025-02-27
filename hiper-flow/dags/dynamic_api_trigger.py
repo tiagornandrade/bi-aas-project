@@ -36,7 +36,7 @@ def create_dag(layer: str, table: str, layer_params: dict, default_args: dict) -
         SimpleHttpOperator(
             task_id=f"{layer}_{table}_trigger",
             http_conn_id="api-etl",
-            endpoint=f"http://0.0.0.0:8000/{layer}/{table}/execute",
+            endpoint=f"/{layer}/{table}/execute",
             method="POST",
             headers={"Content-Type": "application/json"},
             data="{}",

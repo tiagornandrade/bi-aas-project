@@ -7554,3 +7554,73 @@ File Path                                 PID    Runtime      # DAGs    # Errors
 /opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.42s           2025-02-26T22:33:30
 ================================================================================
 [2025-02-26T22:34:04.723+0000] {manager.py:451} INFO - Exiting gracefully upon receiving signal 15
+[2025-02-27T20:04:38.797+0000] {manager.py:469} INFO - Processing files using up to 2 processes at a time
+[2025-02-27T20:04:38.798+0000] {manager.py:470} INFO - Process each file at most once every 30 seconds
+[2025-02-27T20:04:38.798+0000] {manager.py:471} INFO - Checking for new files in /opt/airflow/dags every 300 seconds
+[2025-02-27T20:04:38.798+0000] {manager.py:738} INFO - Searching for files in /opt/airflow/dags
+[2025-02-27T20:04:38.800+0000] {manager.py:741} INFO - There are 1 files in /opt/airflow/dags
+[2025-02-27T20:04:38.908+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                   PID  Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  ----------
+/opt/airflow/dags/dynamic_api_trigger.py     71  0.01s             0           0
+================================================================================
+[2025-02-27T20:05:08.942+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.32s           2025-02-27T20:04:45
+================================================================================
+[2025-02-27T20:05:38.988+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.82s           2025-02-27T20:05:16
+================================================================================
+[2025-02-27T20:06:09.425+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.90s           2025-02-27T20:06:00
+================================================================================
+[2025-02-27T20:06:39.957+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.38s           2025-02-27T20:06:31
+================================================================================
+[2025-02-27T20:07:10.423+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.39s           2025-02-27T20:07:01
+================================================================================
+[2025-02-27T20:07:41.012+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.39s           2025-02-27T20:07:32
+================================================================================
+[2025-02-27T20:08:11.506+0000] {manager.py:879} INFO -
+================================================================================
+DAG File Processing Stats
+
+File Path                                 PID    Runtime      # DAGs    # Errors  Last Runtime    Last Run
+----------------------------------------  -----  ---------  --------  ----------  --------------  -------------------
+/opt/airflow/dags/dynamic_api_trigger.py                         126           0  0.38s           2025-02-27T20:08:02
+================================================================================
+[2025-02-27T20:08:30.137+0000] {manager.py:451} INFO - Exiting gracefully upon receiving signal 15

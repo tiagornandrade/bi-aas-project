@@ -88,6 +88,9 @@ run-main:
 run-couchdb:
 	http://localhost:5984/_utils/
 
+build-image:
+	gcloud builds submit --tag gcr.io/yams-lab-nonprod/cyber-gen:latest
+
 # Ajuda
 .PHONY: help
 help:
@@ -103,3 +106,21 @@ help:
 	@echo "  make down            -> Parar serviços com Docker Compose"
 	@echo "  make restart         -> Reiniciar serviços com Docker Compose"
 	@echo "  make clean           -> Limpar arquivos temporários"
+
+
+## docker build -t cyber-gen-test .
+## docker run -p 8080:8080 cyber-gen-test
+
+## gcloud builds submit --tag gcr.io/yams-lab-nonprod/cyber-gen:latest
+
+## docker pull gcr.io/yams-lab-nonprod/cyber-gen:latest
+## docker run -p 8080:8080 gcr.io/yams-lab-nonprod/cyber-gen:latest
+
+## gcloud firestore databases describe --project=yams-lab-nonprod;
+
+
+# gcloud run deploy cyber-gen-service-dev \
+#     --image gcr.io/yams-lab-nonprod/cyber-gen:latest \
+#     --region us-central1 \
+#     --service-account=biaas-dev@yams-lab-nonprod.iam.gserviceaccount.com \
+#     --allow-unauthenticated
