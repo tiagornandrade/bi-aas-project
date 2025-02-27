@@ -1,5 +1,5 @@
 from google.cloud import datastore
-from datetime import datetime
+from datetime import datetime, timezone
 
 db = datastore.Client()
 
@@ -8,12 +8,12 @@ KIND = "etl_jobs"
 
 def create_status_record(table: str, job_type: str, start_time: str, end_time: str):
     """Cria um registro de status no Google Datastore com status 'queued'."""
-    timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%S")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
     doc_id = f"{table}_{job_type}_{timestamp}"
 
     task_key = db.key(KIND, doc_id)
-
     entity = datastore.Entity(key=task_key)
+
     entity.update(
         {
             "table": table,
@@ -21,8 +21,8 @@ def create_status_record(table: str, job_type: str, start_time: str, end_time: s
             "start_time": start_time,
             "end_time": end_time,
             "status": "queued",
-            "created_at": datetime.utcnow().isoformat(),
-            "updated_at": datetime.utcnow().isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "updated_at": datetime.now(timezone.utc).isoformat(),
         }
     )
 
@@ -32,12 +32,10 @@ def create_status_record(table: str, job_type: str, start_time: str, end_time: s
 
 def update_status(doc_id: str, status: str):
     """Atualiza o status de um job no Google Datastore."""
-    task_key = db.key(KIND, doc_id)
-    entity = db.get(task_key)
-
-    if entity:
+    if entity := db.get(db.key(KIND, doc_id)):
         entity["status"] = status
-        entity["updated_at"] = datetime.utcnow().isoformat()
+        entity["updated_at"] = datetime.now(timezone.utc).isoformat()
         db.put(entity)
-    else:
-        raise ValueError(f"Registro com ID {doc_id} não encontrado.")
+        return
+
+    raise ValueError(f"Registro com ID {doc_id} não encontrado.")

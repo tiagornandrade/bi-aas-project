@@ -18,3 +18,5 @@ ingestion/.env
 workflows/*.xml
 ingestion_dev/.env
 hiper-flow/.env
+cyber-gen/.env
+credential/
