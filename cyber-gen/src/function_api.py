@@ -1,14 +1,13 @@
 import os
 from fastapi import Depends, FastAPI, HTTPException
-from datetime import datetime
+from datetime import datetime, timezone
 import uvicorn
-from datetime import timezone
 from src.utils.query_manager import execute_query
 from src.utils.firestore import (
     DatastoreClient,
     create_status_record,
     get_datastore_client,
-    update_status,
+    update_status as update_status_in_datastore,
 )
 
 app = FastAPI()
@@ -25,21 +24,21 @@ def process_job(layer: str, table: str):
         end_time = start_time
 
         doc_id = create_status_record(table, "execute", start_time, end_time)
-        update_status(doc_id, "running")
+        update_status_in_datastore(doc_id, "running")
 
         execute_query(layer, table, params={})
 
-        update_status(doc_id, "success")
+        update_status_in_datastore(doc_id, "success")
         return {"status": "Execução concluída", "job_id": doc_id}
 
     except FileNotFoundError as e:
         if doc_id:
-            update_status(doc_id, "failed")
+            update_status_in_datastore(doc_id, "failed")
         raise HTTPException(status_code=404, detail="Query não encontrada") from e
 
     except Exception as e:
         if doc_id:
-            update_status(doc_id, "failed")
+            update_status_in_datastore(doc_id, "failed")
         raise HTTPException(status_code=500, detail=str(e)) from e
 
 
@@ -76,7 +75,7 @@ def create_status(
 
 
 @app.patch("/status/{job_id}")
-def update_status(
+def patch_status(
     job_id: str,
     status: str,
     datastore_client: DatastoreClient = Depends(get_datastore_client),
