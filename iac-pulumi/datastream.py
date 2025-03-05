@@ -33,7 +33,9 @@ class Datastream:
             location=self.config.region,
             display_name="Cyber Gen Private Connection",
             vpc_peering_config={
-                "vpc": f"projects/{self.config.project}/global/networks/{datastream_vpc.name}",
+                "vpc": datastream_vpc.name.apply(
+                    lambda name: f"projects/{self.config.project}/global/networks/{name}"
+                ),
                 "subnet": datastream_subnet.id,
             },
         )
@@ -112,19 +114,4 @@ class Datastream:
             friendly_name="Cyber Gen Dataset",
             description="Dataset para armazenar os dados do PostgreSQL via Datastream",
             location=self.config.region,
-        )
-
-    def create_private_connection(self, datastream_subnet, datastream_vpc):
-        """Cria uma conexão privada para o Datastream"""
-        return pulumi_gcp.datastream.PrivateConnection(
-            "cyber-gen-private-connect",
-            private_connection_id="cyber-gen-private-connect",
-            location=self.config.region,
-            display_name="Cyber Gen Private Connection",
-            vpc_peering_config={
-                "vpc": datastream_vpc.name.apply(
-                    lambda name: f"projects/{self.config.project}/global/networks/{name}"
-                ),
-                "subnet": datastream_subnet.id,
-            },
         )

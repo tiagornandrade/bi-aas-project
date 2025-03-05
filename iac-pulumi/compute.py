@@ -1,4 +1,3 @@
-import pulumi
 import pulumi_gcp
 
 
@@ -15,7 +14,7 @@ class Compute:
             region=self.config.region,
         )
 
-        nat = pulumi_gcp.compute.RouterNat(
+        return pulumi_gcp.compute.RouterNat(
             "my-nat-config",
             name="my-nat-config",
             router=router.name,
@@ -23,8 +22,6 @@ class Compute:
             nat_ip_allocate_option="AUTO_ONLY",
             source_subnetwork_ip_ranges_to_nat="ALL_SUBNETWORKS_ALL_IP_RANGES",
         )
-
-        return nat
 
     def create_vm(self, public_ip=False):
         """Cria a VM principal, permitindo definir se terá IP público ou não."""
