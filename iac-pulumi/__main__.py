@@ -1,125 +1,101 @@
 import pulumi
-import pulumi_gcp
-from dotenv import load_dotenv
-import os
+from config import Config
+from networking import Networking
+from database import Database
+from datastream import Datastream
+from compute import Compute
+from cloud_run import CloudRun
+from iam import IAMBinding
 
-load_dotenv()
+config = Config()
 
-project = os.getenv("PROJECT_ID")
-region = os.getenv("REGION")
-zone = "us-central1-a"
-db_name = os.getenv("DB_NAME")
-db_user = os.getenv("DB_USER")
-db_password = os.getenv("DB_PASSWORD")
+# Networking
+networking = Networking(config)
+vpc_connector = networking.create_vpc_connector()
+enable_vpc_api = networking.enable_vpc_api()
 
-network_name = f"projects/{project}/global/networks/default"
+# Database
+database = Database(config)
+db_instance = database.create_instance()
+db = database.create_database(db_instance)
+db_user = database.create_user(db_instance)
 
-db_instance_name = "cyber-gen-db"
-
-vpc_connector = pulumi_gcp.vpcaccess.Connector(
-    "serverless-vpc-connector",
-    name="cyber-gen-vpc-connector",
-    region=region,
-    network=network_name,
-    machine_type="e2-micro",
-    max_instances=3,
-    min_instances=2,
-    ip_cidr_range="10.8.0.0/28",
+# Datastream
+datastream = Datastream(config)
+datastream_vpc = datastream.create_datastream_vpc()
+datastream_subnet = datastream.create_datastream_subnet(datastream_vpc)
+private_connection = datastream.create_private_connection(
+    datastream_subnet, datastream_vpc
 )
 
-db_instance = pulumi_gcp.sql.DatabaseInstance(
-    "cyber_gen_postgres",
-    name=db_instance_name,
-    database_version="POSTGRES_14",
-    region=region,
-    deletion_protection=False,
-    settings={
-        "tier": "db-f1-micro",
-        "availability_type": "REGIONAL",
-        "ip_configuration": {
-            "private_network": network_name,
-        },
-        "backup_configuration": {"enabled": False},
+bigquery_dataset = datastream.create_bigquery_dataset()
+
+datastream_source = datastream.create_datastream_source(private_connection)
+datastream_destination = datastream.create_datastream_destination()
+datastream_stream = datastream.create_datastream_stream(
+    datastream_source, datastream_destination, bigquery_dataset
+)
+
+# Compute
+compute = Compute(config)
+nat = compute.create_nat_gateway()
+vm = compute.create_vm(public_ip=False)
+bastion = compute.create_bastion_host()
+
+# Cloud Run
+cloud_run = CloudRun(config)
+cloud_run_service = cloud_run.create_service(db_instance, vpc_connector)
+iam_policy = cloud_run.create_iam_policy(cloud_run_service)
+
+# IAM
+roles = []
+iam_binding = IAMBinding(config.project, config.service_account_email, roles)
+bindings = iam_binding.create_policy_binding()
+
+# Exports
+pulumi.export(
+    "database_info",
+    {
+        "db_connection_name": db_instance.connection_name if db_instance else None,
+        "db_name": db.name if db else None,
     },
 )
 
-database = pulumi_gcp.sql.Database(
-    "cybergen-db", name=db_name, instance=db_instance.name
-)
-
-db_user_instance = pulumi_gcp.sql.User(
-    "db-user", name=db_user, instance=db_instance.name, password=db_password
-)
-
-vm = pulumi_gcp.compute.Instance(
-    "cyber-gen-vm",
-    name="cyber-gen-vm",
-    machine_type="e2-micro",
-    zone=zone,
-    boot_disk={"initializeParams": {"image": "debian-cloud/debian-11"}},
-    network_interfaces=[
-        {
-            "network": network_name,
-            "subnetwork_project": project,
-            "access_configs": [],
-        }
-    ],
-    metadata_startup_script="""#!/bin/bash
-    apt update && apt install -y postgresql-client
-    echo "PostgreSQL Client instalado com sucesso!"
-    """,
-)
-
-enable_vpc_api = pulumi_gcp.projects.Service(
-    "enable-vpcaccess-api", service="vpcaccess.googleapis.com", disable_on_destroy=False
-)
-
-cloud_run_service = pulumi_gcp.cloudrun.Service(
-    "default",
-    name="cyber-gen-service-1",
-    location=region,
-    template={
-        "spec": {
-            "containers": [
-                {
-                    "image": "gcr.io/yams-lab-nonprod/cyber-gen:latest",
-                    "envs": [
-                        {"name": "DB_NAME", "value": db_name},
-                        {"name": "DB_USER", "value": db_user},
-                        {"name": "DB_PASSWORD", "value": db_password},
-                        {"name": "DB_INSTANCE", "value": db_instance.connection_name},
-                    ],
-                }
-            ],
-            "serviceAccountName": "biaas-dev@yams-lab-nonprod.iam.gserviceaccount.com",
-            "vpcAccess": {"connector": vpc_connector.id, "egress": "ALL_TRAFFIC"},
-        },
+pulumi.export(
+    "compute_info",
+    {
+        "vm_private_ip": vm.network_interfaces[0]["network_ip"] if vm else None,
+        "bastion_ip": (
+            bastion.network_interfaces[0]["access_configs"][0]["nat_ip"]
+            if bastion
+            else None
+        ),
     },
-    traffics=[
-        {
-            "percent": 100,
-            "latestRevision": True,
-        }
-    ],
 )
 
-iam_policy = pulumi_gcp.cloudrun.IamPolicy(
-    "default-no-auth",
-    location=cloud_run_service.location,
-    project=cloud_run_service.project,
-    service=cloud_run_service.name,
-    policy_data=pulumi.Output.all(cloud_run_service.id).apply(
-        lambda service_id: f"""{{
-            "bindings": [
-                {{
-                    "role": "roles/run.invoker",
-                    "members": ["allUsers"]
-                }}
-            ]
-        }}"""
-    ),
+pulumi.export(
+    "datastream_info",
+    {
+        "datastream_source": datastream_source.id if datastream_source else None,
+        "datastream_destination": (
+            datastream_destination.id if datastream_destination else None
+        ),
+        "datastream_stream": datastream_stream.id if datastream_stream else None,
+    },
 )
 
-pulumi.export("service_url", cloud_run_service.statuses[0]["url"])
-pulumi.export("db_connection_name", db_instance.connection_name)
-pulumi.export("vm_private_ip", vm.network_interfaces[0]["network_ip"])
+pulumi.export(
+    "cloud_run_info",
+    {
+        "service_url": (
+            cloud_run_service.statuses[0]["url"] if cloud_run_service else None
+        ),
+    },
+)
+
+pulumi.export(
+    "iam_binding_info",
+    {
+        "iam_binding_id": bindings[0].id if bindings else None,
+    },
+)
