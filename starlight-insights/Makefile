@@ -24,20 +24,33 @@ test:
 .PHONY: up
 up:
 	@echo "⬆️ Iniciando os serviços (Superset, PostgreSQL, Redis, Celery)..."
-	@docker compose -f docker-compose.yml up -d
+	@docker-compose -f docker-compose.yml up -d
 	@echo "✅ Serviços iniciados!"
 
 .PHONY: down
 down:
 	@echo "⬇️ Parando os serviços..."
-	@docker compose down
+	@docker-compose down
 	@echo "✅ Serviços parados!"
 
 .PHONY: restart
 restart:
 	@echo "🔄 Reiniciando os serviços..."
-	@docker compose restart
+	@docker-compose restart
 	@echo "✅ Serviços reiniciados!"
+
+.PHONY: setup
+setup: up
+	@echo "⚙️  Configurando Superset..."
+	@docker exec -it superset superset db upgrade
+	@docker exec -it superset superset init
+	@docker exec -it superset superset fab create-admin \
+		--username admin \
+		--firstname Superset \
+		--lastname Admin \
+		--email admin@localhost \
+		--password admin
+	@echo "✅ Superset configurado!"
 
 .PHONY: logs
 logs:
@@ -60,5 +73,6 @@ help:
 	@echo "  make up              -> Subir serviços com Docker Compose"
 	@echo "  make down            -> Parar serviços com Docker Compose"
 	@echo "  make restart         -> Reiniciar serviços com Docker Compose"
+	@echo "  make setup           -> Configurar Superset"
 	@echo "  make logs            -> Ver logs do Superset"
 	@echo "  make clean           -> Limpar arquivos temporários"
