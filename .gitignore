@@ -21,3 +21,4 @@ hiper-flow/.env
 cyber-gen/.env
 credential/
 iac-pulumi/.env
+starlight-insights/.env

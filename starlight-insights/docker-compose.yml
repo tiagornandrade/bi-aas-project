@@ -1,0 +1,34 @@
+version: '3.7'
+
+services:
+  superset:
+    build:
+      context: ./superset
+      dockerfile: Dockerfile
+    container_name: superset
+    restart: always
+    volumes:
+      - ./superset_home:/app/superset_home
+    environment:
+      - DATABASE_DB=superset
+      - DATABASE_HOST=db
+      - DATABASE_PASSWORD=superset
+      - DATABASE_USER=superset
+      - DATABASE_PORT=5432
+    ports:
+      - '8080:8088'
+    depends_on:
+      - db
+
+  db:
+    image: postgres:15-alpine
+    container_name: superset_db
+    restart: always
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=superset
+      - POSTGRES_USER=superset
+      - POSTGRES_PASSWORD=secretsecret
+    ports:
+      - '5431:5432'
