@@ -1,4 +1,5 @@
 import pulumi  # type: ignore
+import pulumi_gcp  # type: ignore
 from config import Config
 from networking import Networking
 from database import Database
@@ -22,16 +23,13 @@ db_user = database.create_user(db_instance)
 
 # Datastream
 datastream = Datastream(config)
-datastream_vpc = datastream.create_datastream_vpc()
-datastream_subnet = datastream.create_datastream_subnet(datastream_vpc)
-private_connection = datastream.create_private_connection(
-    datastream_subnet, datastream_vpc
-)
+datastream_vpc, datastream_subnet = datastream.create_datastream_network()
+
+datastream_source = datastream.create_datastream_source()
+datastream_destination = datastream.create_datastream_destination()
 
 bigquery_dataset = datastream.create_bigquery_dataset()
 
-datastream_source = datastream.create_datastream_source(private_connection)
-datastream_destination = datastream.create_datastream_destination()
 datastream_stream = datastream.create_datastream_stream(
     datastream_source, datastream_destination, bigquery_dataset
 )
@@ -48,7 +46,7 @@ cloud_run_service = cloud_run.create_service(db_instance, vpc_connector)
 iam_policy = cloud_run.create_iam_policy(cloud_run_service)
 
 # IAM
-roles = []
+roles = ["roles/cloudsql.admin", "roles/storage.admin", "roles/bigquery.admin"]
 iam_binding = IAMBinding(config.project, config.service_account_email, roles)
 bindings = iam_binding.create_policy_binding()
 
