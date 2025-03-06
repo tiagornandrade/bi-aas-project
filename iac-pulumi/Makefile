@@ -33,6 +33,12 @@ destroy:
 	@pulumi stack rm || echo "Stack já removido"
 	@echo "✅ Infraestrutura destruída!"
 
+.PHONY: refresh
+refresh:
+	@echo "🔄 Atualizando a infraestrutura..."
+	@pulumi refresh
+	@echo "✅ Infraestrutura atualizada!"
+
 .PHONY: help
 help:
 	@echo "📚 Comandos disponíveis:"

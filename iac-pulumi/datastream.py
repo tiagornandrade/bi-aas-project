@@ -1,71 +1,81 @@
 import pulumi
 import pulumi_gcp
+import time
+
+
+unique_suffix = str(int(time.time()))
 
 
 class Datastream:
+    """Creates and manages Datastream resources.
+
+    This class handles the creation of Datastream networks, source and
+    destination connection profiles, streams, and BigQuery datasets.
+    """
+
     def __init__(self, config):
         self.config = config
 
-    def create_datastream_network(
-        self, vpc_name="datastream-vpc", subnet_name="datastream-subnet"
-    ):
-        """Cria uma VPC personalizada e uma sub-rede para o Datastream"""
+    def create_datastream_network(self):
+        """Creates a custom VPC network and subnet for Datastream.
+
+        This method sets up the required network infrastructure for Datastream,
+        including a VPC network and a subnet with private Google access.
+        """
         vpc = pulumi_gcp.compute.Network(
-            vpc_name,
-            name=vpc_name,
+            "datastream-vpc",
+            name="datastream-vpc",
             auto_create_subnetworks=False,
         )
 
         subnet = pulumi_gcp.compute.Subnetwork(
-            subnet_name,
-            name=subnet_name,
+            "datastream-subnet",
+            name="datastream-subnet",
             region=self.config.region,
             network=vpc.id,
-            ip_cidr_range="10.240.0.0/24",
+            ip_cidr_range="10.250.0.0/24",
             private_ip_google_access=True,
         )
 
         return vpc, subnet
 
-    def create_private_connection(self, datastream_subnet, datastream_vpc):
-        """Cria uma conexão privada para o Datastream"""
-        return pulumi_gcp.datastream.PrivateConnection(
-            "cyber-gen-private-connect",
-            private_connection_id="cyber-gen-private-connect",
-            location=self.config.region,
-            display_name="Cyber Gen Private Connection",
-            vpc_peering_config={
-                "vpc": datastream_vpc.name.apply(
-                    lambda name: f"projects/{self.config.project}/global/networks/{name}"
-                ),
-                "subnet": datastream_subnet.id,
-            },
-        )
+    def create_datastream_source(self):
+        """Creates a Datastream connection profile for a PostgreSQL source.
 
-    def create_datastream_source(self, private_connection):
-        """Cria um ConnectionProfile para o PostgreSQL no Cloud SQL via IP privado"""
+        This method sets up a connection profile to an existing PostgreSQL database
+        hosted in Cloud SQL, using authorized IP for connectivity.
+        """
+        authorized_networks = [
+            {"value": "34.71.242.81"},
+            {"value": "34.72.28.29"},
+            {"value": "34.67.6.157"},
+            {"value": "34.67.234.134"},
+            {"value": "34.72.239.218"},
+        ]
+
         return pulumi_gcp.datastream.ConnectionProfile(
-            "cyber-gen-source-connection",
-            connection_profile_id="cyber-gen-source-connection",
+            f"cyber-gen-source-connection-{unique_suffix}",
+            connection_profile_id=f"source-profile-{unique_suffix}",
             location=self.config.region,
             display_name="Cyber Gen PostgreSQL Source",
             postgresql_profile={
-                "hostname": "10.97.17.2",
+                "hostname": self.config.db_host,
                 "port": 5432,
                 "database": self.config.db_name,
                 "username": self.config.db_user,
                 "password": pulumi.Output.secret(self.config.db_password),
             },
-            private_connectivity={
-                "private_connection": private_connection.id,
-            },
         )
 
     def create_datastream_destination(self):
-        """Cria o ConnectionProfile para o BigQuery"""
+        """Creates a Datastream connection profile for a BigQuery destination.
+
+        This method sets up a connection profile to BigQuery, which serves
+        as the destination for the Datastream.
+        """
         return pulumi_gcp.datastream.ConnectionProfile(
-            "cyber-gen-destination-connection",
-            connection_profile_id="cyber-gen-destination-connection",
+            f"cyber-gen-destination-connection-{unique_suffix}",
+            connection_profile_id=f"destination-profile-{unique_suffix}",
             location=self.config.region,
             display_name="Cyber Gen BigQuery Destination",
             bigquery_profile={},
@@ -74,46 +84,50 @@ class Datastream:
     def create_datastream_stream(
         self, source_connection, destination_connection, bigquery_dataset
     ):
-        """Cria um Stream para transferir dados do PostgreSQL para o BigQuery"""
-        return pulumi_gcp.datastream.Stream(
-            "cyber-gen-stream",
+        """Creates a Datastream stream to replicate data from PostgreSQL to BigQuery.
+
+        This method configures a stream to transfer data from a PostgreSQL source
+        to a BigQuery destination, including specific tables and performing a backfill.
+        """
+        stream = pulumi_gcp.datastream.Stream(
+            f"cyber-gen-stream-{unique_suffix}",
             display_name="Cyber Gen Replication Stream",
             location=self.config.region,
-            stream_id="postgres-to-bigquery-stream",
+            stream_id=f"postgres-to-bigquery-stream-{unique_suffix}",
             source_config={
                 "source_connection_profile": source_connection.id,
                 "postgresql_source_config": {
                     "include_objects": {
                         "postgresql_schemas": [
-                            {
-                                "schema": "public",
-                                "postgresql_tables": [
-                                    {"table": "orders"},
-                                    {"table": "customers"},
-                                ],
-                            }
+                            {"schema": "public", "postgresql_tables": [{"table": "*"}]},
                         ]
-                    }
+                    },
+                    "publication": "postgres_publication",
+                    "replication_slot": "postgres_replication",
                 },
             },
             destination_config={
                 "destination_connection_profile": destination_connection.id,
                 "bigquery_destination_config": {
-                    "data_freshness": "900s",
+                    "data_freshness": "300s",
                     "single_target_dataset": {
-                        "dataset_id": bigquery_dataset.dataset_id,
+                        "dataset_id": bigquery_dataset.id,
                     },
+                    "append_only": {},
                 },
             },
             backfill_all={},
         )
 
-    def create_bigquery_dataset(self):
+    def create_bigquery_dataset(self, prefix="cdc_postgres_"):
         """Cria um dataset no BigQuery"""
+        dataset_name = f"{prefix}{self.config.bigquery_dataset}"
+
         return pulumi_gcp.bigquery.Dataset(
             "cyber-gen-dataset",
-            dataset_id=self.config.bigquery_dataset,
+            dataset_id=dataset_name,
             friendly_name="Cyber Gen Dataset",
             description="Dataset para armazenar os dados do PostgreSQL via Datastream",
-            location=self.config.region,
+            location="US",
+            opts=pulumi.ResourceOptions(delete_before_replace=True),
         )

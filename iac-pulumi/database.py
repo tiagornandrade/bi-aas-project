@@ -26,9 +26,16 @@ class Database:
                 "ip_configuration": {
                     "private_network": self.config.network_name,
                     "ipv4_enabled": True,
-                    "authorized_networks": [{"value": "0.0.0.0/0"}],
+                    "authorized_networks": [
+                        {"value": "0.0.0.0/0"},
+                        {"value": "34.71.242.81"},
+                        {"value": "34.72.28.29"},
+                    ],
                 },
                 "backup_configuration": {"enabled": False},
+                "database_flags": [
+                    {"name": "cloudsql.logical_decoding", "value": "on"}
+                ],
             },
         )
 

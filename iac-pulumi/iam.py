@@ -24,4 +24,14 @@ class IAMBinding:
             )
             iam_bindings.append(binding)
 
+        bigquery_permission = pulumi_gcp.projects.IAMBinding(
+            "datastream-bigquery-permissions",
+            project=self.project_id,
+            members=[
+                "serviceAccount:service-517665453940@gcp-sa-datastream.iam.gserviceaccount.com"
+            ],
+            role="roles/bigquery.dataViewer",
+        )
+        iam_bindings.append(bigquery_permission)
+
         return iam_bindings

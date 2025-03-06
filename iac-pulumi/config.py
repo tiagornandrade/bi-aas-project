@@ -10,6 +10,7 @@ class Config:
         self.project = os.getenv("PROJECT_ID")
         self.region = os.getenv("REGION")
         self.zone = os.getenv("ZONE", "us-central1-a")
+        self.db_host = os.getenv("DB_HOST")
         self.db_name = os.getenv("DB_NAME")
         self.db_user = os.getenv("DB_USER")
         self.db_password = pulumi.Output.secret(os.getenv("DB_PASSWORD"))
