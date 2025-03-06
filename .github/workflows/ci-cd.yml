@@ -61,11 +61,8 @@ jobs:
     - name: Set PYTHONPATH
       run: |
         echo "PYTHONPATH=$(pwd)/workflows/src" >> $GITHUB_ENV
-        echo "PYTHONPATH=${{ github.workspace }}/workflows/src" >> $GITHUB_ENV
-        echo $PYTHONPATH  # Verifique se o PYTHONPATH foi corretamente setado
-
-    - name: Check PYTHONPATH
-      run: echo "PYTHONPATH is set to: $PYTHONPATH"
+        echo "PYTHONPATH=$GITHUB_WORKSPACE/workflows/src" >> $GITHUB_ENV
+        echo "PYTHONPATH is set to: $PYTHONPATH"
 
     - name: Run tests in workflows/
       run: cd workflows && make test
