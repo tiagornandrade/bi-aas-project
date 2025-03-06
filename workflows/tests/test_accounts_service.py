@@ -7,6 +7,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from utils.db import SessionLocal, Base, engine
 
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
 
 @pytest.fixture(scope="function")
 def test_db():
@@ -51,9 +56,7 @@ def test_insert_users_happy_path(test_db, count):
 
 
 def test_insert_users_rollback(test_db, mocker):
-    mock_db = mocker.patch(
-        "services.account.SessionLocal", autospec=True
-    ).return_value
+    mock_db = mocker.patch("services.account.SessionLocal", autospec=True).return_value
     mock_db.commit.side_effect = Exception("Mock DB error")
 
     inserted_users = AccountService.insert_users(5)
@@ -79,9 +82,7 @@ def test_insert_accounts_happy_path(test_db, count):
 
 
 def test_insert_accounts_rollback(test_db, mocker):
-    mock_db = mocker.patch(
-        "services.account.SessionLocal", autospec=True
-    ).return_value
+    mock_db = mocker.patch("services.account.SessionLocal", autospec=True).return_value
     mock_db.commit.side_effect = Exception("Mock DB error")
     AccountService.insert_users(5)
 
@@ -108,9 +109,7 @@ def test_insert_subaccounts_happy_path(test_db, count):
 
 
 def test_insert_subaccounts_rollback(test_db, mocker):
-    mock_db = mocker.patch(
-        "services.account.SessionLocal", autospec=True
-    ).return_value
+    mock_db = mocker.patch("services.account.SessionLocal", autospec=True).return_value
     mock_db.commit.side_effect = Exception("Mock DB error")
     AccountService.insert_users(5)
     AccountService.insert_accounts(5)

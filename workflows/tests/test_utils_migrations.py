@@ -6,6 +6,11 @@ from utils.db import Base
 from sqlalchemy.orm import Session
 from sqlalchemy.sql import text
 
+import sys
+import os
+
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
+
 
 @pytest.fixture
 def table_name():
