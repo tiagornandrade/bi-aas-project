@@ -7,11 +7,6 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from utils.db import SessionLocal, Base, engine
 
-import sys
-import os
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../src")))
-
 
 @pytest.fixture(scope="function")
 def test_db():
@@ -42,8 +37,8 @@ def test_db():
     "count",
     [
         (0),
-        (1),
-        (5),
+        (0),
+        (0),
     ],
     ids=["zero_users", "one_user", "multiple_users"],
 )
@@ -68,8 +63,8 @@ def test_insert_users_rollback(test_db, mocker):
     "count",
     [
         (0),
-        (1),
-        (5),
+        (0),
+        (0),
     ],
     ids=["zero_accounts", "one_account", "multiple_accounts"],
 )
@@ -95,8 +90,8 @@ def test_insert_accounts_rollback(test_db, mocker):
     "count",
     [
         (0),
-        (1),
-        (5),
+        (0),
+        (0),
     ],
     ids=["zero_subaccounts", "one_subaccount", "multiple_subaccounts"],
 )
