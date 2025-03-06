@@ -59,7 +59,13 @@ jobs:
       run: cd workflows && pip install -r requirements.txt
 
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)/workflows/src" >> $GITHUB_ENV
+      run: |
+        echo "PYTHONPATH=${{ github.workspace }}/workflows/src" >> $GITHUB_ENV
+        echo "PYTHONPATH=${{ github.workspace }}/workflows/src:$PYTHONPATH" >> $GITHUB_ENV
+
+    - name: Check PYTHONPATH
+      run: |
+        echo "PYTHONPATH is set to: $PYTHONPATH"
 
     - name: Run tests in workflows/
       run: cd workflows && make test

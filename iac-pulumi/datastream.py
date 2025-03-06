@@ -21,7 +21,7 @@ def get_resource_name(base: str) -> str:
     return f"{base}-{unique_suffix}"
 
 
-def build_source_config(source_connection) -> dict:
+def build_source_config(source_connection, config) -> dict:
     """Builds the source configuration for the Datastream stream.
 
     This function constructs the source configuration dictionary required
@@ -42,24 +42,7 @@ def build_source_config(source_connection) -> dict:
                     {
                         "schema": "public",
                         "postgresql_tables": [
-                            {"table": "accounts"},
-                            {"table": "audits"},
-                            {"table": "claims"},
-                            {"table": "credit_scores"},
-                            {"table": "entities"},
-                            {"table": "insured_entities"},
-                            {"table": "loans"},
-                            {"table": "merchants"},
-                            {"table": "payment_methods"},
-                            {"table": "payments"},
-                            {"table": "policies"},
-                            {"table": "portfolios"},
-                            {"table": "regulations"},
-                            {"table": "risk_assessments"},
-                            {"table": "subaccounts"},
-                            {"table": "transactions"},
-                            {"table": "user_verifications"},
-                            {"table": "users"},
+                            {"table": table} for table in config.tables
                         ],
                     }
                 ]
@@ -148,7 +131,7 @@ class Datastream:
         )
 
     def create_datastream_stream(
-        self, source_connection, destination_connection, bigquery_dataset
+        self, source_connection, destination_connection, bigquery_dataset, config
     ):
         """Creates a Datastream stream to replicate data from PostgreSQL to BigQuery."""
         stream = pulumi_gcp.datastream.Stream(
@@ -156,7 +139,7 @@ class Datastream:
             display_name="Cyber Gen Replication Stream",
             location=self.config.region,
             stream_id=get_resource_name("postgres-to-bigquery-stream"),
-            source_config=build_source_config(source_connection),
+            source_config=build_source_config(source_connection, config),
             destination_config=build_destination_config(
                 destination_connection, bigquery_dataset
             ),
