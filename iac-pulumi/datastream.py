@@ -147,7 +147,9 @@ class Datastream:
             bigquery_profile={},
         )
 
-    def create_datastream_stream(self, source_connection, destination_connection, bigquery_dataset):
+    def create_datastream_stream(
+        self, source_connection, destination_connection, bigquery_dataset
+    ):
         """Creates a Datastream stream to replicate data from PostgreSQL to BigQuery."""
         stream = pulumi_gcp.datastream.Stream(
             get_resource_name("cyber-gen-stream"),
@@ -155,7 +157,9 @@ class Datastream:
             location=self.config.region,
             stream_id=get_resource_name("postgres-to-bigquery-stream"),
             source_config=build_source_config(source_connection),
-            destination_config=build_destination_config(destination_connection, bigquery_dataset),
+            destination_config=build_destination_config(
+                destination_connection, bigquery_dataset
+            ),
             backfill_all={},
         )
 

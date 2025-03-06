@@ -101,13 +101,13 @@ VALUES
 
 
 
-SELECT 
-    id, 
-    audit_id, 
-    entity_id, 
-    status, 
-    findings, 
-    date, 
+SELECT
+    id,
+    audit_id,
+    entity_id,
+    status,
+    findings,
+    date,
     created_at,
     datastream_metadata.uuid AS uuid,
     TIMESTAMP_SECONDS(CAST(CAST(datastream_metadata.source_timestamp AS INT64) / 1000 AS INT64)) AS source_timestamp,
