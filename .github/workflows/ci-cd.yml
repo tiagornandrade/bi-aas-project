@@ -59,13 +59,13 @@ jobs:
       run: cd workflows && pip install -r requirements.txt
 
     - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=/home/runner/work/bi-aas-project/bi-aas-project/workflows/src" >> $GITHUB_ENV
+      run: |
+        echo "PYTHONPATH=$(pwd)/workflows/src" >> $GITHUB_ENV
+        echo "PYTHONPATH=${{ github.workspace }}/workflows/src" >> $GITHUB_ENV
+        echo $PYTHONPATH  # Verifique se o PYTHONPATH foi corretamente setado
 
     - name: Check PYTHONPATH
-      run: echo $PYTHONPATH
-
-    - name: Check installed packages
-      run: pip list
+      run: echo "PYTHONPATH is set to: $PYTHONPATH"
 
     - name: Run tests in workflows/
       run: cd workflows && make test
