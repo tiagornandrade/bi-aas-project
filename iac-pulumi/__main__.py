@@ -1,4 +1,4 @@
-import pulumi
+import pulumi  # type: ignore
 from config import Config
 from networking import Networking
 from database import Database
@@ -88,7 +88,9 @@ pulumi.export(
     "cloud_run_info",
     {
         "service_url": (
-            cloud_run_service.statuses[0]["url"] if cloud_run_service else None
+            cloud_run_service.statuses[0]["url"]
+            if (cloud_run_service and cloud_run_service.statuses)
+            else None
         ),
     },
 )

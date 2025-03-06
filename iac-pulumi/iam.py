@@ -1,4 +1,5 @@
 import pulumi_gcp
+import logging
 
 
 class IAMBinding:
@@ -9,6 +10,9 @@ class IAMBinding:
 
     def create_policy_binding(self):
         """Cria a ligação da política IAM para a conta de serviço"""
+        if not self.roles:
+            logging.warning("Roles list is empty. Nenhuma ligação IAM será criada.")
+
         iam_bindings = []
 
         for role in self.roles:

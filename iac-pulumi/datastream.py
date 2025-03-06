@@ -6,24 +6,26 @@ class Datastream:
     def __init__(self, config):
         self.config = config
 
-    def create_datastream_vpc(self, vpc_name="datastream-vpc"):
-        """Cria uma VPC personalizada para o Datastream"""
-        return pulumi_gcp.compute.Network(
+    def create_datastream_network(
+        self, vpc_name="datastream-vpc", subnet_name="datastream-subnet"
+    ):
+        """Cria uma VPC personalizada e uma sub-rede para o Datastream"""
+        vpc = pulumi_gcp.compute.Network(
             vpc_name,
             name=vpc_name,
             auto_create_subnetworks=False,
         )
 
-    def create_datastream_subnet(self, network):
-        """Cria uma sub-rede para o Datastream"""
-        return pulumi_gcp.compute.Subnetwork(
-            "datastream-subnet",
-            name="datastream-subnet",
+        subnet = pulumi_gcp.compute.Subnetwork(
+            subnet_name,
+            name=subnet_name,
             region=self.config.region,
-            network=network.id,
+            network=vpc.id,
             ip_cidr_range="10.240.0.0/24",
             private_ip_google_access=True,
         )
+
+        return vpc, subnet
 
     def create_private_connection(self, datastream_subnet, datastream_vpc):
         """Cria uma conexão privada para o Datastream"""
