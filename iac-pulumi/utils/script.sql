@@ -110,7 +110,7 @@ SELECT
     date,
     created_at,
     datastream_metadata.uuid AS uuid,
-    TIMESTAMP_SECONDS(CAST(CAST(datastream_metadata.source_timestamp AS INT64) / 1000 AS INT64)) AS source_timestamp,
+    TIMESTAMP_MILLIS(datastream_metadata.source_timestamp) AS source_timestamp,
     datastream_metadata.change_sequence_number AS change_sequence_number,
     datastream_metadata.change_type AS change_type
 FROM `yams-lab-nonprod.cdc_postgres_cybergen.public_audits`
