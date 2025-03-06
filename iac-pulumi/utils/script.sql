@@ -97,3 +97,21 @@ VALUES
 (8, CURRENT_TIMESTAMP, 185.75, 'completed', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (5, CURRENT_TIMESTAMP, 99.99, 'pending', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
 (6, CURRENT_TIMESTAMP, 420.00, 'shipped', CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);
+
+
+
+
+SELECT
+    id,
+    audit_id,
+    entity_id,
+    status,
+    findings,
+    date,
+    created_at,
+    datastream_metadata.uuid AS uuid,
+    TIMESTAMP_MILLIS(datastream_metadata.source_timestamp) AS source_timestamp,
+    datastream_metadata.change_sequence_number AS change_sequence_number,
+    datastream_metadata.change_type AS change_type
+FROM `yams-lab-nonprod.cdc_postgres_cybergen.public_audits`
+WHERE datastream_metadata.change_type = 'DELETE';

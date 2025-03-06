@@ -6,31 +6,113 @@ import time
 unique_suffix = str(int(time.time()))
 
 
-class Datastream:
-    """Creates and manages Datastream resources.
+def get_resource_name(base: str) -> str:
+    """Generates a unique resource name.
 
-    This class handles the creation of Datastream networks, source and
-    destination connection profiles, streams, and BigQuery datasets.
+    This helper function creates a unique resource name by appending
+    a timestamp-based suffix to the provided base name.
+
+    Args:
+        base: The base name for the resource.
+
+    Returns:
+        The unique resource name.
     """
+    return f"{base}-{unique_suffix}"
+
+
+def build_source_config(source_connection) -> dict:
+    """Builds the source configuration for the Datastream stream.
+
+    This function constructs the source configuration dictionary required
+    by the Datastream stream, specifying the connection profile and
+    PostgreSQL objects to include.
+
+    Args:
+        source_connection: The Datastream source connection profile.
+
+    Returns:
+        The source configuration dictionary.
+    """
+    return {
+        "source_connection_profile": source_connection.id,
+        "postgresql_source_config": {
+            "include_objects": {
+                "postgresql_schemas": [
+                    {
+                        "schema": "public",
+                        "postgresql_tables": [
+                            {"table": "accounts"},
+                            {"table": "audits"},
+                            {"table": "claims"},
+                            {"table": "credit_scores"},
+                            {"table": "entities"},
+                            {"table": "insured_entities"},
+                            {"table": "loans"},
+                            {"table": "merchants"},
+                            {"table": "payment_methods"},
+                            {"table": "payments"},
+                            {"table": "policies"},
+                            {"table": "portfolios"},
+                            {"table": "regulations"},
+                            {"table": "risk_assessments"},
+                            {"table": "subaccounts"},
+                            {"table": "transactions"},
+                            {"table": "user_verifications"},
+                            {"table": "users"},
+                        ],
+                    }
+                ]
+            },
+            "publication": "postgres_publication",
+            "replication_slot": "postgres_replication",
+        },
+    }
+
+
+def build_destination_config(destination_connection, bigquery_dataset) -> dict:
+    """Builds the destination configuration for the Datastream stream.
+
+    This function constructs the destination configuration dictionary for
+    the Datastream stream, specifying the BigQuery connection profile,
+    target dataset, and append-only mode.
+
+    Args:
+        destination_connection: The Datastream destination connection profile.
+        bigquery_dataset: The BigQuery dataset object.
+
+    Returns:
+        The destination configuration dictionary.
+    """
+    return {
+        "destination_connection_profile": destination_connection.id,
+        "bigquery_destination_config": {
+            # "data_freshness": "900s",
+            "single_target_dataset": {"dataset_id": bigquery_dataset.id},
+            "append_only": {},
+        },
+    }
+
+
+class Datastream:
+    """Creates and manages Datastream resources."""
 
     def __init__(self, config):
         self.config = config
 
     def create_datastream_network(self):
-        """Creates a custom VPC network and subnet for Datastream.
-
-        This method sets up the required network infrastructure for Datastream,
-        including a VPC network and a subnet with private Google access.
-        """
+        """Creates a custom VPC network and subnet for Datastream."""
+        vpc_name = get_resource_name("datastream-vpc")
         vpc = pulumi_gcp.compute.Network(
-            "datastream-vpc",
-            name="datastream-vpc",
+            vpc_name,
+            name=vpc_name,
             auto_create_subnetworks=False,
         )
 
+        subnet_name = get_resource_name("datastream-subnet")
         subnet = pulumi_gcp.compute.Subnetwork(
-            "datastream-subnet",
-            name="datastream-subnet",
+            subnet_name,
+            name=subnet_name,
             region=self.config.region,
             network=vpc.id,
             ip_cidr_range="10.250.0.0/24",
@@ -40,22 +122,10 @@ class Datastream:
         return vpc, subnet
 
     def create_datastream_source(self):
-        """Creates a Datastream connection profile for a PostgreSQL source.
-
-        This method sets up a connection profile to an existing PostgreSQL database
-        hosted in Cloud SQL, using authorized IP for connectivity.
-        """
-        authorized_networks = [
-            {"value": "34.71.242.81"},
-            {"value": "34.72.28.29"},
-            {"value": "34.67.6.157"},
-            {"value": "34.67.234.134"},
-            {"value": "34.72.239.218"},
-        ]
-
+        """Creates a Datastream connection profile for a PostgreSQL source."""
         return pulumi_gcp.datastream.ConnectionProfile(
-            f"cyber-gen-source-connection-{unique_suffix}",
-            connection_profile_id=f"source-profile-{unique_suffix}",
+            get_resource_name("cyber-gen-source-connection"),
+            connection_profile_id=get_resource_name("source-profile"),
             location=self.config.region,
             display_name="Cyber Gen PostgreSQL Source",
             postgresql_profile={
@@ -68,14 +138,10 @@ class Datastream:
         )
 
     def create_datastream_destination(self):
-        """Creates a Datastream connection profile for a BigQuery destination.
-
-        This method sets up a connection profile to BigQuery, which serves
-        as the destination for the Datastream.
-        """
+        """Creates a Datastream connection profile for a BigQuery destination."""
         return pulumi_gcp.datastream.ConnectionProfile(
-            f"cyber-gen-destination-connection-{unique_suffix}",
-            connection_profile_id=f"destination-profile-{unique_suffix}",
+            get_resource_name("cyber-gen-destination-connection"),
+            connection_profile_id=get_resource_name("destination-profile"),
             location=self.config.region,
             display_name="Cyber Gen BigQuery Destination",
             bigquery_profile={},
@@ -84,50 +150,28 @@ class Datastream:
     def create_datastream_stream(
         self, source_connection, destination_connection, bigquery_dataset
     ):
-        """Creates a Datastream stream to replicate data from PostgreSQL to BigQuery.
-
-        This method configures a stream to transfer data from a PostgreSQL source
-        to a BigQuery destination, including specific tables and performing a backfill.
-        """
+        """Creates a Datastream stream to replicate data from PostgreSQL to BigQuery."""
         stream = pulumi_gcp.datastream.Stream(
-            f"cyber-gen-stream-{unique_suffix}",
+            get_resource_name("cyber-gen-stream"),
             display_name="Cyber Gen Replication Stream",
             location=self.config.region,
-            stream_id=f"postgres-to-bigquery-stream-{unique_suffix}",
-            source_config={
-                "source_connection_profile": source_connection.id,
-                "postgresql_source_config": {
-                    "include_objects": {
-                        "postgresql_schemas": [
-                            {"schema": "public", "postgresql_tables": [{"table": "*"}]},
-                        ]
-                    },
-                    "publication": "postgres_publication",
-                    "replication_slot": "postgres_replication",
-                },
-            },
-            destination_config={
-                "destination_connection_profile": destination_connection.id,
-                "bigquery_destination_config": {
-                    "data_freshness": "300s",
-                    "single_target_dataset": {
-                        "dataset_id": bigquery_dataset.id,
-                    },
-                    "append_only": {},
-                },
-            },
+            stream_id=get_resource_name("postgres-to-bigquery-stream"),
+            source_config=build_source_config(source_connection),
+            destination_config=build_destination_config(
+                destination_connection, bigquery_dataset
+            ),
             backfill_all={},
         )
 
     def create_bigquery_dataset(self, prefix="cdc_postgres_"):
-        """Cria um dataset no BigQuery"""
+        """Creates a BigQuery dataset."""
         dataset_name = f"{prefix}{self.config.bigquery_dataset}"
 
         return pulumi_gcp.bigquery.Dataset(
-            "cyber-gen-dataset",
+            get_resource_name("cyber-gen-dataset"),
             dataset_id=dataset_name,
             friendly_name="Cyber Gen Dataset",
-            description="Dataset para armazenar os dados do PostgreSQL via Datastream",
+            description="Dataset for PostgreSQL data via Datastream",
             location="US",
             opts=pulumi.ResourceOptions(delete_before_replace=True),
         )
