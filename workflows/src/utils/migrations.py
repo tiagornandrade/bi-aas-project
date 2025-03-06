@@ -1,13 +1,13 @@
-from models.account import Base
-from models.audit import Base
-from models.compliance import Base
-from models.credit import Base
-from models.entities import Base
-from models.insurance import Base
-from models.investments import Base
-from models.lending import Base
-from models.payment import Base
-from utils.db import engine, Base
+from src.models.account import Base
+from src.models.audit import Base
+from src.models.compliance import Base
+from src.models.credit import Base
+from src.models.entities import Base
+from src.models.insurance import Base
+from src.models.investments import Base
+from src.models.lending import Base
+from src.models.payment import Base
+from src.utils.db import engine, Base
 from sqlalchemy import MetaData, text
 from sqlalchemy.exc import SQLAlchemyError
 
