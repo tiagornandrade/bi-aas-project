@@ -15,13 +15,13 @@ networking = Networking(config)
 vpc_connector = networking.create_vpc_connector()
 enable_vpc_api = networking.enable_vpc_api()
 
-# Database
+# # Database
 database = Database(config)
 db_instance = database.create_instance()
 db = database.create_database(db_instance)
 db_user = database.create_user(db_instance)
 
-# Datastream
+# # Datastream
 datastream = Datastream(config)
 datastream_vpc, datastream_subnet = datastream.create_datastream_network()
 
@@ -34,7 +34,7 @@ datastream_stream = datastream.create_datastream_stream(
     datastream_source, datastream_destination, bigquery_dataset
 )
 
-# Compute
+# # Compute
 compute = Compute(config)
 nat = compute.create_nat_gateway()
 vm = compute.create_vm(public_ip=False)
@@ -42,15 +42,19 @@ bastion = compute.create_bastion_host()
 
 # Cloud Run
 cloud_run = CloudRun(config)
-cloud_run_service = cloud_run.create_service(db_instance, vpc_connector)
-iam_policy = cloud_run.create_iam_policy(cloud_run_service)
+
+api_service = cloud_run.create_api_service(db_instance, vpc_connector)
+producer_service = cloud_run.create_producer_service(db_instance, vpc_connector)
+
+cloud_run.create_iam_policy(api_service)
+cloud_run.create_iam_policy(producer_service)
 
 # IAM
 roles = ["roles/cloudsql.admin", "roles/storage.admin", "roles/bigquery.admin"]
 iam_binding = IAMBinding(config.project, config.service_account_email, roles)
 bindings = iam_binding.create_policy_binding()
 
-# Exports
+# # Exports
 pulumi.export(
     "database_info",
     {
@@ -85,9 +89,14 @@ pulumi.export(
 pulumi.export(
     "cloud_run_info",
     {
-        "service_url": (
-            cloud_run_service.statuses[0]["url"]
-            if (cloud_run_service and cloud_run_service.statuses)
+        "api_service_url": (
+            api_service.statuses[0]["url"]
+            if (api_service and api_service.statuses)
+            else None
+        ),
+        "producer_service_url": (
+            producer_service.statuses[0]["url"]
+            if (producer_service and producer_service.statuses)
             else None
         ),
     },

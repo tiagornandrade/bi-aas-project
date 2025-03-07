@@ -1,0 +1,12 @@
+# Dependências principais para o Producer e Consumer
+psycopg2-binary==2.9.9
+sqlalchemy==2.0.27
+fastapi
+uvicorn
+google-cloud-pubsub
+google-cloud-bigquery
+jsonschema==4.21.1
+pydantic==2.6.4
+python-dotenv==1.0.1
+loguru==0.7.2
+pyyaml==6.0.1
