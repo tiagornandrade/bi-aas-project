@@ -1,0 +1,9 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/yams-lab-nonprod/consumer:latest', '-f', 'Dockerfile.consumer', '.']
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', 'gcr.io/yams-lab-nonprod/producer:latest', '-f', 'Dockerfile.producer', '.']
+
+images:
+  - 'gcr.io/yams-lab-nonprod/consumer:latest'
+  - 'gcr.io/yams-lab-nonprod/producer:latest'

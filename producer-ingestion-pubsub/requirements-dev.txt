@@ -1,0 +1,11 @@
+# Ferramentas de testes
+pytest==8.0.2
+pytest-cov==5.0.0
+pytest-mock==3.12.0
+
+# Ferramentas de linting e formatação
+black==24.2.0
+flake8==7.0.0
+isort==5.13.2
+mypy==1.9.0
+pre-commit==3.7.0

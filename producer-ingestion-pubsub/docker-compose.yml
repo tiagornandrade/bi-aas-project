@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - subnet
+
+  pubsub-emulator:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:slim
+    container_name: pubsub-emulator
+    entrypoint: [ "gcloud", "beta", "emulators", "pubsub", "start", "--host-port=0.0.0.0:8085" ]
+    ports:
+      - "8085:8085"
+    networks:
+      - subnet
+
+  app:
+    build: .
+    container_name: app
+    restart: always
+    depends_on:
+      - postgres
+      - pubsub-emulator
+    environment:
+      GCP_PROJECT_ID: "my-local-project"
+      PUBSUB_EMULATOR_HOST: "pubsub-emulator:8085"
+      DB_HOST: "postgres"
+      DB_PORT: "5432"
+      DB_USER: "postgres"
+      DB_PASSWORD: "postgres"
+      DBNAME: "postgres"
+    networks:
+      - subnet
+
+volumes:
+  postgres_data:
+
+networks:
+  subnet:
+    driver: bridge
