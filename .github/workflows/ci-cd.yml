@@ -9,8 +9,9 @@ on:
       - main
 
 jobs:
-  test-root:
-    name: Run tests in root directory
+
+  test-workflow-synthetic-data:
+    name: Run tests in workflow-synthetic-data directory
     runs-on: ubuntu-latest
 
     steps:
@@ -22,62 +23,28 @@ jobs:
         python-version: '3.12'
 
     - name: Install dependencies
-      run: pip install -r requirements.txt
-
-    - name: Set PYTHONPATH
-      run: echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
-
-    - name: Run tests in root with report
-      run: pytest tests/ --junitxml=test-results-root.xml
-
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      with:
-        name: test-results-root
-        path: test-results-root.xml
-
-    - name: Display test results summary
-      if: always()
-      run: |
-        echo "### Test Results for Root" >> $GITHUB_STEP_SUMMARY
-        echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY
-
-
-  test-workflows:
-    name: Run tests in workflows directory
-    runs-on: ubuntu-latest
-
-    steps:
-    - uses: actions/checkout@v3
-
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
-
-    - name: Install dependencies
-      run: cd workflows && pip install -r requirements.txt
+      run: cd workflow-synthetic-data && pip install -r requirements.txt
 
     - name: Set PYTHONPATH
       run: |
-        echo "PYTHONPATH=${{ github.workspace }}/workflows/src" >> $GITHUB_ENV
-        echo "PYTHONPATH=${{ github.workspace }}/workflows/src:$PYTHONPATH" >> $GITHUB_ENV
+        echo "PYTHONPATH=${{ github.workspace }}/workflow-synthetic-data/src" >> $GITHUB_ENV
+        echo "PYTHONPATH=${{ github.workspace }}/workflow-synthetic-data/src:$PYTHONPATH" >> $GITHUB_ENV
 
     - name: Check PYTHONPATH
       run: |
         echo "PYTHONPATH is set to: $PYTHONPATH"
 
-    - name: Run tests in workflows/
-      run: cd workflows && make test
+    - name: Run tests in workflow-synthetic-data/
+      run: cd workflow-synthetic-data && make test
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
       with:
-        name: test-results-workflows
-        path: workflows/test-results-workflows.xml
+        name: test-results-workflow-synthetic-data
+        path: workflow-synthetic-data/test-results-workflow-synthetic-data.xml
 
     - name: Display test results summary
       if: always()
       run: |
-        echo "### Test Results for workflows" >> $GITHUB_STEP_SUMMARY
+        echo "### Test Results for workflow-synthetic-data" >> $GITHUB_STEP_SUMMARY
         echo "Check the full report in the artifacts section." >> $GITHUB_STEP_SUMMARY

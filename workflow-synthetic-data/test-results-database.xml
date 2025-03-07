@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="12" failures="0" skipped="0" tests="17" time="0.347" timestamp="2025-02-26T10:17:59.733130" hostname="MacBook-Pro-de-Tiago.local"><testcase classname="tests.test_services" name="test_insert_users_happy_path[zero_users]" time="0.030"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_users_happy_path[one_user]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_users_happy_path[multiple_users]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_users_rollback" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_accounts_happy_path[zero_accounts]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_accounts_happy_path[one_account]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_accounts_happy_path[multiple_accounts]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_accounts_rollback" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_subaccounts_happy_path[zero_subaccounts]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_subaccounts_happy_path[one_subaccount]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_subaccounts_happy_path[multiple_subaccounts]" time="0.003"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_services" name="test_insert_subaccounts_rollback" time="0.002"><error message="failed on setup with &quot;NameError: name 'SessionLocal' is not defined&quot;">@pytest.fixture(scope="function")
+    def test_db():
+        """Garante que os testes rodem no SQLite e não no PostgreSQL."""
+
+        test_engine = create_engine("sqlite:///:memory:")
+        TestingSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=test_engine)
+
+        Base.metadata.create_all(test_engine)
+        db = TestingSessionLocal()
+
+        global SessionLocal
+&gt;       original_session = SessionLocal
+E       NameError: name 'SessionLocal' is not defined
+
+tests/test_services.py:22: NameError</error></testcase><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_error_handling" time="0.006" /><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_add_columns[test_table-&lt;lambda&gt;-&lt;lambda&gt;-expected_alter_statements0]" time="0.018" /><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_add_columns[test_table-&lt;lambda&gt;-&lt;lambda&gt;-expected_alter_statements1]" time="0.016" /><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_no_missing_columns[existing_table]" time="0.015" /><testcase classname="tests.test_utils_migrations" name="test_sync_models_with_db_no_missing_columns[non_existing_table]" time="0.017" /></testsuite></testsuites>

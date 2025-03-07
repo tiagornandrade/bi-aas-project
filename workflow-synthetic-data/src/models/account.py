@@ -39,6 +39,6 @@ class User(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(String)
     name = Column(String)
-    email = Column(String, unique=True)
+    email = Column(String)
     phone = Column(String)
     created_at = Column(DateTime, default=datetime.utcnow)

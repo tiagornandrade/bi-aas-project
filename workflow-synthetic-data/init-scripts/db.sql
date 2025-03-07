@@ -12,8 +12,8 @@ ALTER SYSTEM SET track_commit_timestamp = on;
 SELECT pg_reload_conf();
 
 -- Criando o slot de replicação apenas se ele não existir
-DO $$ 
-BEGIN 
+DO $$
+BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_replication_slots WHERE slot_name = 'my_slot') THEN
         PERFORM pg_create_logical_replication_slot('my_slot', 'pgoutput');
     END IF;
@@ -21,6 +21,9 @@ END $$;
 
 -- Criando uma publicação para todas as tabelas
 CREATE PUBLICATION my_publication FOR ALL TABLES;
+ALTER SYSTEM SET wal_level = 'logical';
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO postgres;
+SELECT PG_CREATE_LOGICAL_REPLICATION_SLOT('my_slot', 'pgoutput');
 
 -- Validando a configuração da replicação
 SELECT * FROM pg_publication;
