@@ -11,6 +11,7 @@ if COUCHDB_DBNAME not in server:
 else:
     db = server[COUCHDB_DBNAME]
 
+
 def create_status_record(table: str, job_type: str, start_time: str, end_time: str):
     """Cria um registro de status como 'queued' no CouchDB, com um ID único baseado na tabela e tipo de carga."""
     timestamp = datetime.utcnow().strftime("%Y%m%dT%H%M%S")
@@ -28,6 +29,7 @@ def create_status_record(table: str, job_type: str, start_time: str, end_time: s
     }
     db.save(doc)
     return doc_id
+
 
 def update_status(doc_id: str, status: str):
     """Atualiza o status de um job no CouchDB."""
